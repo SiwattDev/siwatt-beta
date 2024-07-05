@@ -12,6 +12,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import useAuth from '../../../../hooks/useAuth'
+import Loading from '../../../template/Loading/Loading'
 
 type User = {
     email: string
@@ -37,6 +38,7 @@ export default function LoginForm({
     setForgotPassword,
     forgotPassword,
 }: LoginFormProps) {
+    const [loading, setLoading] = useState(false)
     const [user, setUser] = useState<User>({ email: '', password: '' })
     const [showPassword, setShowPassword] = useState(false)
     const [userErrors, setUserErrors] = useState<UserErrors>({})
@@ -75,6 +77,7 @@ export default function LoginForm({
     }
 
     const handleLogin = async () => {
+        setLoading(true)
         const emailError = validateField('email', user.email)
         const passwordError = validateField('password', user.password)
         setUserErrors({ email: emailError, password: passwordError })
@@ -83,11 +86,13 @@ export default function LoginForm({
             try {
                 const loginResponse = await login(user)
                 if (loginResponse && loginResponse.user) {
+                    setLoading(false)
                     toast.success('Login feito com sucesso')
                     await new Promise((resolve) => setTimeout(resolve, 1000))
                     navigate('/dashboard')
                 }
             } catch (error: any) {
+                setLoading(false)
                 toast.error(error.message)
             }
         } else toast.error('Preencha os dados corretamente')
@@ -155,6 +160,9 @@ export default function LoginForm({
             >
                 Entrar
             </Button>
+            {loading && (
+                <Loading fullPage message='Tentando conectar você...' />
+            )}
         </>
     )
 }

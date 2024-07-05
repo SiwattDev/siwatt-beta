@@ -19,6 +19,7 @@ import {
     Typography,
 } from '@mui/material'
 import { Budget } from '../../../types/BudgetTypes'
+import { Client } from '../../../types/EntityTypes'
 
 export default function BudgetItem({ budget }: { budget: Budget }) {
     const status: {
@@ -56,6 +57,13 @@ export default function BudgetItem({ budget }: { budget: Budget }) {
     const currentStatus =
         status.find((s) => s.status === budget.status) || status[0]
 
+    // Função para verificar se budget.client é do tipo Client
+    function isClient(client: any): client is Client {
+        return (client as Client).name !== undefined
+    }
+
+    const client = isClient(budget.client) ? budget.client : null
+
     return (
         <Card sx={{ height: '100%' }}>
             <CardContent
@@ -64,7 +72,8 @@ export default function BudgetItem({ budget }: { budget: Budget }) {
             >
                 <Box>
                     <Typography>
-                        <strong>Cliente:</strong> {budget.client.name}
+                        <strong>Cliente:</strong>{' '}
+                        {client ? client.name : 'Cliente desconhecido'}
                     </Typography>
                     <Typography>
                         <strong>Número da Proposta:</strong> {budget.id}
@@ -74,11 +83,14 @@ export default function BudgetItem({ budget }: { budget: Budget }) {
                         {budget.peakGeneration}
                     </Typography>
                     <Typography>
-                        <strong>{budget.client.cpf ? 'CPF:' : 'CNPJ:'}</strong>{' '}
-                        {budget.client.cpf || budget.client.cnpj}
+                        <strong>
+                            {client && client.cpf ? 'CPF:' : 'CNPJ:'}
+                        </strong>{' '}
+                        {client ? client.cpf || client.cnpj : 'N/A'}
                     </Typography>
                     <Typography>
-                        <strong>Telefone:</strong> {budget.client.phone}
+                        <strong>Telefone:</strong>{' '}
+                        {client ? client.phone : 'N/A'}
                     </Typography>
                 </Box>
                 <Grid container spacing={2} className='mt-2'>
