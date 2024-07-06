@@ -4,6 +4,7 @@ import {
     Button,
     Paper,
     Table,
+    TableBody,
     TableCell,
     TableContainer,
     TableHead,
@@ -11,12 +12,28 @@ import {
     Typography,
     useTheme,
 } from '@mui/material'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { BudgetContext } from '../../../../../../contexts/BudgetContext'
 import EnergyBillForm from './EnergyBillForm'
 
 export default function EnergyBillTable() {
     const theme = useTheme()
     const [showAddEnergyBill, setShowAddEnergyBill] = useState<boolean>(false)
+    const { budget } = useContext(BudgetContext)
+    // const months = [
+    //     'JAN',
+    //     'FEV',
+    //     'MAR',
+    //     'ABR',
+    //     'MAI',
+    //     'JUN',
+    //     'JUL',
+    //     'AGO',
+    //     'SET',
+    //     'OUT',
+    //     'NOV',
+    //     'DEZ',
+    // ]
 
     return (
         <Box>
@@ -28,6 +45,19 @@ export default function EnergyBillTable() {
                             <TableCell>Unidade</TableCell>
                         </TableRow>
                     </TableHead>
+                    <TableBody>
+                        {budget.consumption?.energyBills?.map((energyBill) => (
+                            <TableRow key={energyBill.id}>
+                                {Object.values(energyBill.months).map(
+                                    (value, index) => (
+                                        <TableCell key={index}>
+                                            {value}
+                                        </TableCell>
+                                    )
+                                )}
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </TableContainer>
             <Typography variant='caption' color={theme.palette.text.secondary}>

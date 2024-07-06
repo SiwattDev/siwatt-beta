@@ -1,16 +1,34 @@
 import { Box, Card, CardContent, useMediaQuery, useTheme } from '@mui/material'
-import { useState } from 'react'
+import { onAuthStateChanged } from 'firebase/auth'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import IconLogo from '../../../assets/icon-logo.png'
 import Illustration from '../../../assets/login.png'
 import TextLogo from '../../../assets/logo.png'
+import { auth } from '../../../firebase'
+import Loading from '../../template/Loading/Loading'
+import ToastCustom from '../../template/ToastCustom/ToastCustom'
 import LoginForm from './LoginForm/LoginForm'
 import ResetPasswordForm from './ResetPasswordForm/ResetPasswordForm'
-import ToastCustom from '../../template/ToastCustom/ToastCustom'
 
 export default function Login() {
+    const [loading, setLoading] = useState(false)
     const [forgotPassword, setForgotPassword] = useState(false)
     const theme = useTheme()
     const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) navigate('/dashboard')
+            else setLoading(false)
+        })
+
+        return () => unsubscribe()
+    }, [])
+
+    if (loading)
+        return <Loading fullPage message='Verificando usuários conectados...' />
 
     return (
         <Box

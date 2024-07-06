@@ -1,3 +1,3 @@
-const baseURL = 'http://localhost:3000'
+const baseURL = 'https://siwatt-backend-beta.onrender.com'
 
 export { baseURL }

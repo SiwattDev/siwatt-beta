@@ -55,7 +55,7 @@ const validateStep = (step: number, budget: Budget) => {
         case 1:
             return (
                 budget.consumption &&
-                budget.consumption?.energyBills.length &&
+                budget.consumption?.energyBills?.length &&
                 budget.consumption.roofType &&
                 budget.consumption.networkType
             )

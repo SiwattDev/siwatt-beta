@@ -61,11 +61,14 @@ export default function ClientStep() {
                 <>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth size='small'>
-                            <InputLabel>Selecione um cliente *</InputLabel>
+                            <InputLabel required>
+                                Selecione um cliente
+                            </InputLabel>
                             <Select
+                                required
                                 value={selectedClient}
                                 onChange={handleChange}
-                                label='Selecione um cliente *'
+                                label='Selecione um cliente'
                             >
                                 <MenuItem value=''>
                                     <em>Selecione um cliente</em>

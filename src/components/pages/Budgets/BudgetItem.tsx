@@ -57,7 +57,6 @@ export default function BudgetItem({ budget }: { budget: Budget }) {
     const currentStatus =
         status.find((s) => s.status === budget.status) || status[0]
 
-    // Função para verificar se budget.client é do tipo Client
     function isClient(client: any): client is Client {
         return (client as Client).name !== undefined
     }

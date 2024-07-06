@@ -51,6 +51,7 @@ type Consumption = {
 type Budget = {
     id: number
     client: Client | string
+    uf?: string
     cityName: string
     consumption: Consumption
     kit: Kit
