@@ -7,12 +7,11 @@ import Illustration from '../../../assets/login.png'
 import TextLogo from '../../../assets/logo.png'
 import { auth } from '../../../firebase'
 import Loading from '../../template/Loading/Loading'
-import ToastCustom from '../../template/ToastCustom/ToastCustom'
 import LoginForm from './LoginForm/LoginForm'
 import ResetPasswordForm from './ResetPasswordForm/ResetPasswordForm'
 
 export default function Login() {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [forgotPassword, setForgotPassword] = useState(false)
     const theme = useTheme()
     const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
@@ -145,7 +144,6 @@ export default function Login() {
                     </CardContent>
                 </Card>
             </Box>
-            <ToastCustom />
         </Box>
     )
 }

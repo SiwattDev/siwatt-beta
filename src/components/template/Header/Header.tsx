@@ -1,7 +1,7 @@
 import {
     AccountCircleRounded,
-    Brightness4,
-    Brightness7,
+    DarkModeRounded,
+    LightModeRounded,
 } from '@mui/icons-material'
 import {
     Box,
@@ -60,7 +60,7 @@ export default function Header() {
                 }}
             >
                 <IconButton onClick={toggleTheme}>
-                    {darkMode ? <Brightness7 /> : <Brightness4 />}
+                    {darkMode ? <LightModeRounded /> : <DarkModeRounded />}
                 </IconButton>
                 <IconButton
                     onClick={handleClick}

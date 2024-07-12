@@ -1,7 +1,8 @@
-import { AddRounded } from '@mui/icons-material'
+import { AddRounded, DeleteRounded, EditRounded } from '@mui/icons-material'
 import {
     Box,
     Button,
+    IconButton,
     Paper,
     Table,
     TableBody,
@@ -12,28 +13,49 @@ import {
     Typography,
     useTheme,
 } from '@mui/material'
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { BudgetContext } from '../../../../../../contexts/BudgetContext'
+import { EnergyBill } from '../../../../../../types/BudgetTypes'
 import EnergyBillForm from './EnergyBillForm'
 
 export default function EnergyBillTable() {
     const theme = useTheme()
     const [showAddEnergyBill, setShowAddEnergyBill] = useState<boolean>(false)
-    const { budget } = useContext(BudgetContext)
-    // const months = [
-    //     'JAN',
-    //     'FEV',
-    //     'MAR',
-    //     'ABR',
-    //     'MAI',
-    //     'JUN',
-    //     'JUL',
-    //     'AGO',
-    //     'SET',
-    //     'OUT',
-    //     'NOV',
-    //     'DEZ',
-    // ]
+    const [energyBillToEdit, setEnergyBillToEdit] = useState<EnergyBill | null>(
+        null
+    )
+    const { budget, setBudget } = useContext(BudgetContext)
+    const months = [
+        'JAN',
+        'FEV',
+        'MAR',
+        'ABR',
+        'MAI',
+        'JUN',
+        'JUL',
+        'AGO',
+        'SET',
+        'OUT',
+        'NOV',
+        'DEZ',
+    ]
+
+    const handleEdit = (energyBill: EnergyBill) => {
+        setEnergyBillToEdit(energyBill)
+        setShowAddEnergyBill(true)
+    }
+
+    const handleRemove = (id: string) => {
+        setBudget({
+            ...budget,
+            consumption: {
+                ...budget.consumption,
+                energyBills: budget.consumption.energyBills.filter(
+                    (bill) => bill.id !== id
+                ),
+            },
+        })
+    }
 
     return (
         <Box>
@@ -42,21 +64,56 @@ export default function EnergyBillTable() {
                 <Table size='small'>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Unidade</TableCell>
+                            <TableCell>Mês</TableCell>
+                            {budget.consumption?.energyBills?.map(
+                                (energyBill) => (
+                                    <TableCell key={energyBill.id}>
+                                        <Box display='flex' alignItems='center'>
+                                            {energyBill.id}
+                                            <IconButton
+                                                onClick={() =>
+                                                    handleEdit(energyBill)
+                                                }
+                                            >
+                                                <EditRounded fontSize='small' />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() =>
+                                                    handleRemove(energyBill.id)
+                                                }
+                                            >
+                                                <DeleteRounded fontSize='small' />
+                                            </IconButton>
+                                        </Box>
+                                    </TableCell>
+                                )
+                            )}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {budget.consumption?.energyBills?.map((energyBill) => (
-                            <TableRow key={energyBill.id}>
-                                {Object.values(energyBill.months).map(
-                                    (value, index) => (
-                                        <TableCell key={index}>
-                                            {value}
-                                        </TableCell>
-                                    )
-                                )}
+                        {budget.consumption?.energyBills ? (
+                            <React.Fragment>
+                                {months.map((month) => (
+                                    <TableRow key={month}>
+                                        <TableCell>{month}</TableCell>
+                                        {budget.consumption?.energyBills?.map(
+                                            (energyBill) => (
+                                                <TableCell key={energyBill.id}>
+                                                    {energyBill.months[month] ||
+                                                        '-'}
+                                                </TableCell>
+                                            )
+                                        )}
+                                    </TableRow>
+                                ))}
+                            </React.Fragment>
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={12}>
+                                    Nenhuma conta de energia adicionada
+                                </TableCell>
                             </TableRow>
-                        ))}
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -67,14 +124,49 @@ export default function EnergyBillTable() {
                 <Button
                     variant='contained'
                     size='small'
-                    onClick={() => setShowAddEnergyBill(true)}
+                    onClick={() => {
+                        setEnergyBillToEdit(null)
+                        setShowAddEnergyBill(true)
+                    }}
                 >
                     <AddRounded /> Adicionar conta de energia
                 </Button>
             </Box>
             <EnergyBillForm
                 open={showAddEnergyBill}
-                onClose={() => setShowAddEnergyBill(false)}
+                onClose={(newEnergyBill) => {
+                    setShowAddEnergyBill(false)
+                    if (newEnergyBill) {
+                        if (energyBillToEdit) {
+                            setBudget({
+                                ...budget,
+                                consumption: {
+                                    ...budget.consumption,
+                                    energyBills:
+                                        budget.consumption.energyBills.map(
+                                            (bill) =>
+                                                bill.id === newEnergyBill.id
+                                                    ? newEnergyBill
+                                                    : bill
+                                        ),
+                                },
+                            })
+                        } else {
+                            setBudget({
+                                ...budget,
+                                consumption: {
+                                    ...budget.consumption,
+                                    energyBills: [
+                                        ...(budget.consumption?.energyBills ||
+                                            []),
+                                        newEnergyBill,
+                                    ],
+                                },
+                            })
+                        }
+                    }
+                }}
+                energyBillToEdit={energyBillToEdit}
             />
         </Box>
     )

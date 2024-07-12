@@ -1,3 +1,3 @@
-const baseURL = 'https://siwatt-backend-beta.onrender.com'
+const baseURL = 'https://siwatt-backend-evnxd7yrfa-uc.a.run.app/'
 
 export { baseURL }

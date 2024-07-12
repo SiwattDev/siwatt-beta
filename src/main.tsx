@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import 'react-toastify/dist/ReactToastify.css'
+import { AlertProvider } from './contexts/AlertContext.tsx'
 import { BudgetProvider } from './contexts/BudgetContext.tsx'
 import { DarkModeProvider } from './contexts/DarkModeContext.tsx'
 import { UserProvider } from './contexts/UserContext.tsx'
@@ -46,11 +47,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <ThemeProvider theme={theme}>
             <DarkModeProvider>
-                <UserProvider>
-                    <BudgetProvider>
-                        <Router />
-                    </BudgetProvider>
-                </UserProvider>
+                <AlertProvider>
+                    <UserProvider>
+                        <BudgetProvider>
+                            <Router />
+                        </BudgetProvider>
+                    </UserProvider>
+                </AlertProvider>
             </DarkModeProvider>
         </ThemeProvider>
     </React.StrictMode>

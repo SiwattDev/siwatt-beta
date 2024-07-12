@@ -17,12 +17,11 @@ import {
     useTheme,
 } from '@mui/material'
 import React, { useContext, useState } from 'react'
-import { toast } from 'react-toastify'
 import { BudgetContext } from '../../../../contexts/BudgetContext'
 import { Budget } from '../../../../types/BudgetTypes'
 import PageHeader from '../../../template/PageHeader/PageHeader'
-import ToastCustom from '../../../template/ToastCustom/ToastCustom'
 // Step Components
+import { AlertContext } from '../../../../contexts/AlertContext'
 import ClientStep from './Steps/ClientStep/ClientStep'
 import ConsumptionStep from './Steps/ConsumptionStep/ConsumptionStep'
 import KitStep from './Steps/KitStep/KitStep'
@@ -79,6 +78,7 @@ const validateStep = (step: number, budget: Budget) => {
 }
 
 export default function NewBudget() {
+    const { showAlert } = useContext(AlertContext)
     const theme = useTheme()
     const [activeStep, setActiveStep] = useState(0)
     const { budget } = useContext(BudgetContext)
@@ -91,7 +91,10 @@ export default function NewBudget() {
                 setActiveStep((prevActiveStep) => prevActiveStep + 1)
             }
         } else {
-            toast.error('Por favor, preencha todos os campos obrigatórios (*).')
+            showAlert({
+                message: 'Por favor, preencha todos os campos obrigatórios (*)',
+                type: 'warning',
+            })
         }
     }
 
@@ -164,7 +167,6 @@ export default function NewBudget() {
                     </Typography>
                 </CardContent>
             </Card>
-            <ToastCustom />
         </React.Fragment>
     )
 }

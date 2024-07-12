@@ -24,18 +24,7 @@ type Kit = {
 type EnergyBill = {
     id: string
     months: {
-        JAN: number
-        FEV: number
-        MAR: number
-        ABR: number
-        MAI: number
-        JUN: number
-        JUL: number
-        AGO: number
-        SET: number
-        OUT: number
-        NOV: number
-        DEZ: number
+        [key: string]: number
     }
     photoEnergyBill: string
     photoConsumptionGraph: string
@@ -61,4 +50,4 @@ type Budget = {
     status: string
 }
 
-export type { Budget, Kit }
+export type { Budget, Consumption, EnergyBill, Kit }

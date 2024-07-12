@@ -3,16 +3,17 @@ import axios from 'axios'
 import { onAuthStateChanged } from 'firebase/auth'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import styled from 'styled-components'
+import { AlertContext } from '../../contexts/AlertContext'
 import { UserContext } from '../../contexts/UserContext'
 import { auth } from '../../firebase'
 import { baseURL } from '../../globals'
+import useAuth from '../../hooks/useAuth'
+import { Error } from '../../types/BackendError'
 import Content from '../template/Content/Content'
 import Header from '../template/Header/Header'
 import Loading from '../template/Loading/Loading'
 import Sidebar from '../template/Sidebar/Sidebar'
-import ToastCustom from '../template/ToastCustom/ToastCustom'
 
 const Container = styled.div`
     display: grid;
@@ -31,6 +32,8 @@ export default function Dashboard() {
     const theme = useTheme()
     const { setUser } = useContext(UserContext)
     const navigate = useNavigate()
+    const { logout } = useAuth()
+    const { showAlert } = useContext(AlertContext)
 
     useEffect(() => {
         const subscribe = onAuthStateChanged(auth, async (user) => {
@@ -44,13 +47,23 @@ export default function Dashboard() {
                     })
 
                     if (!userData.data)
-                        toast.error('Erro ao buscar os dados do usuário')
+                        showAlert({
+                            message: 'Erro ao buscar os dados do usuário',
+                            type: 'error',
+                        })
 
                     setUser(userData.data)
                     setLoading(false)
                 } catch (error) {
+                    const err: any = error
+                    const errData: Error = err.response?.data
                     console.log('Erro:', error)
-                    toast.success('Erro ao buscar os dados do usuário')
+                    logout()
+                    showAlert({
+                        message: `Erro ao buscar os dados do usuário: ${errData.message}`,
+                        type: 'error',
+                    })
+                    navigate('/')
                 }
             } else {
                 setLoading(false)
@@ -78,7 +91,6 @@ export default function Dashboard() {
             <Header />
             <Sidebar />
             <Content />
-            <ToastCustom />
         </Container>
     )
 }

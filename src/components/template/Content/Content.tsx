@@ -1,6 +1,22 @@
 import { Box, useMediaQuery, useTheme } from '@mui/material'
 import { Outlet } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
+
+const GlobalStyle = createGlobalStyle`
+  * {
+    &::-webkit-scrollbar {
+        width: 15px;
+        background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: ${(props) => props.theme.palette.text.primary};
+        border-radius: 8px;
+        border: 5px solid transparent;
+        background-clip: content-box;
+    }
+  }
+`
 
 const Container = styled.main`
     grid-area: content;
@@ -22,18 +38,6 @@ const ScrollBox = styled(Box)`
     max-height: inherit;
     overflow: auto;
     position: relative;
-
-    &::-webkit-scrollbar {
-        width: 15px;
-        background-color: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: ${(props) => props.theme.palette.text.primary};
-        border-radius: 8px;
-        border: 5px solid transparent;
-        background-clip: content-box;
-    }
 `
 
 export default function Content() {
@@ -42,6 +46,7 @@ export default function Content() {
 
     return (
         <Container style={{ paddingLeft: isMdUp ? '0px' : '10px' }}>
+            <GlobalStyle theme={theme} />
             <ScrollBox theme={theme}>
                 <Outlet />
             </ScrollBox>

@@ -1,6 +1,6 @@
 import { Button, TextField } from '@mui/material'
-import { useState } from 'react'
-import { toast } from 'react-toastify'
+import { useContext, useState } from 'react'
+import { AlertContext } from '../../../../contexts/AlertContext'
 
 type User = {
     email: string
@@ -26,6 +26,7 @@ export default function ResetPasswordForm({
 }: LoginFormProps) {
     const [user, setUser] = useState<User>({ email: '' })
     const [userErrors, setUserErrors] = useState<UserErrors>({})
+    const { showAlert } = useContext(AlertContext)
 
     const validateField = (
         name: string,
@@ -55,9 +56,15 @@ export default function ResetPasswordForm({
 
         if (!emailError) {
             console.log('Reset de senha solicitado', user)
-            toast.success('Solicitação de redefinição de senha enviada')
+            showAlert({
+                message: 'Solicitação de redefinição de senha enviada',
+                type: 'success',
+            })
         } else {
-            toast.error('Erro ao solicitar redefinição de senha')
+            showAlert({
+                message: 'Erro ao solicitar redefinição de senha',
+                type: 'error',
+            })
         }
     }
 

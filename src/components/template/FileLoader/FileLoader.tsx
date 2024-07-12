@@ -6,6 +6,7 @@ type FileLoaderProps = {
     acceptedTypes: string[]
     maxQuantity: number
     sx?: object
+    onFilesChanged: (files: File[]) => void
 }
 
 type SelectedFile = File
@@ -14,9 +15,20 @@ export default function FileLoader({
     acceptedTypes,
     maxQuantity,
     sx,
+    onFilesChanged,
 }: FileLoaderProps) {
     const [selectedFile, setSelectedFile] = useState<SelectedFile | null>(null)
     const inputRef = useRef<HTMLInputElement>(null)
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] || null
+        setSelectedFile(file)
+        if (file) {
+            onFilesChanged([file])
+        } else {
+            onFilesChanged([])
+        }
+    }
 
     return (
         <Box
@@ -27,7 +39,9 @@ export default function FileLoader({
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100%',
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
             }}
         >
             <Typography
@@ -38,8 +52,7 @@ export default function FileLoader({
                     textOverflow: 'ellipsis',
                     width: '100%',
                     textAlign: 'center',
-                    height: 'fit-content',
-                    mb: 1,
+                    lineHeight: 1.5,
                 }}
             >
                 {selectedFile
@@ -51,17 +64,14 @@ export default function FileLoader({
                 hidden
                 type='file'
                 accept={acceptedTypes.join(',')}
-                onChange={(event) => {
-                    const file = event.target.files?.[0]
-                    if (file) setSelectedFile(file)
-                }}
+                onChange={handleFileChange}
                 multiple={maxQuantity > 1}
             />
             {selectedFile ? (
                 <Box
                     sx={{
                         width: '100%',
-                        height: 'calc(100%)',
+                        height: 'calc(100% - 30px)',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -82,7 +92,11 @@ export default function FileLoader({
                 <Box
                     className='border rounded p-2 px-3 d-flex flex-column align-items-center justify-content-center'
                     onClick={() => inputRef.current?.click()}
-                    sx={{ cursor: 'pointer', width: '100%', height: '100%' }}
+                    sx={{
+                        cursor: 'pointer',
+                        width: '100%',
+                        height: 'calc(100% - 48px)',
+                    }}
                 >
                     <CloudUploadRounded sx={{ fontSize: 50 }} />
                     <Typography variant='h6'>Selecionar arquivo</Typography>

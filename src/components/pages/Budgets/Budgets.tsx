@@ -1,20 +1,20 @@
 import { AddRounded, DescriptionRounded } from '@mui/icons-material'
 import { Fab, Grid, Tooltip } from '@mui/material'
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { AlertContext } from '../../../contexts/AlertContext'
 import { baseURL } from '../../../globals'
 import { Budget } from '../../../types/BudgetTypes'
 import Loading from '../../template/Loading/Loading'
 import PageHeader from '../../template/PageHeader/PageHeader'
-import ToastCustom from '../../template/ToastCustom/ToastCustom'
 import BudgetItem from './BudgetItem'
 
 export default function Budgets() {
     const [loading, setLoading] = useState(true)
     const [budgets, setBudgets] = useState<Budget[]>([])
     const navigate = useNavigate()
+    const { showAlert } = useContext(AlertContext)
 
     useEffect(() => {
         const getBudgets = async () => {
@@ -27,7 +27,10 @@ export default function Budgets() {
                 })
 
                 if (!response.data) {
-                    toast.error('Erro ao buscar os orçamentos')
+                    showAlert({
+                        message: 'Erro ao buscar os orçamentos',
+                        type: 'error',
+                    })
                     return
                 }
 
@@ -35,7 +38,10 @@ export default function Budgets() {
                 setLoading(false)
             } catch (error) {
                 const err: any = error
-                toast.error(`Erro ao buscar os orçamentos: ${err.code}`)
+                showAlert({
+                    message: `Erro ao buscar os orçamentos: ${err.code}`,
+                    type: 'error',
+                })
                 setLoading(false)
             }
         }
@@ -73,7 +79,6 @@ export default function Budgets() {
                     <AddRounded />
                 </Fab>
             </Tooltip>
-            <ToastCustom />
         </React.Fragment>
     )
 }

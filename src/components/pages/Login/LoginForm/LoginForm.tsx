@@ -8,9 +8,9 @@ import {
     InputLabel,
     TextField,
 } from '@mui/material'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { AlertContext } from '../../../../contexts/AlertContext'
 import useAuth from '../../../../hooks/useAuth'
 import Loading from '../../../template/Loading/Loading'
 
@@ -44,6 +44,7 @@ export default function LoginForm({
     const [userErrors, setUserErrors] = useState<UserErrors>({})
     const { login } = useAuth()
     const navigate = useNavigate()
+    const { showAlert } = useContext(AlertContext)
 
     const validateField = (
         name: string,
@@ -87,15 +88,21 @@ export default function LoginForm({
                 const loginResponse = await login(user)
                 if (loginResponse && loginResponse.user) {
                     setLoading(false)
-                    toast.success('Login feito com sucesso')
+                    showAlert({
+                        message: 'Login feito com sucesso',
+                        type: 'success',
+                    })
                     await new Promise((resolve) => setTimeout(resolve, 1000))
                     navigate('/dashboard')
                 }
             } catch (error: any) {
                 setLoading(false)
-                toast.error(error.message)
+                showAlert({ message: error.message, type: 'error' })
             }
-        } else toast.error('Preencha os dados corretamente')
+        } else {
+            showAlert({ message: 'Campos inválidos', type: 'error' })
+            setLoading(false)
+        }
     }
 
     return (
