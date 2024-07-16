@@ -1,6 +1,7 @@
 import { Client, Seller } from './EntityTypes'
 
 type Kit = {
+    id: string
     modules: {
         id: string
         model: string
@@ -37,11 +38,17 @@ type Consumption = {
     networkType: 'single-phase' | 'two-phase' | 'three-phase'
 }
 
+type SolarPlantSite = {
+    uf: string
+    city: string
+}
+
 type Budget = {
     id: number
     client: Client | string
-    uf?: string
-    cityName: string
+    uf?: string // depreciated
+    cityName?: string // depreciated
+    solarPlantSite: SolarPlantSite
     consumption: Consumption
     kit: Kit
     validity: string

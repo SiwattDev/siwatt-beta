@@ -52,7 +52,7 @@ export default function Sidebar() {
         { to: 'agents', icon: <BadgeRounded />, text: 'Usuários' },
         { to: 'teams', icon: <Diversity3Rounded />, text: 'Equipes' },
         { to: 'partners', icon: <HandshakeRounded />, text: 'Parceiros' },
-        { to: 'branches', icon: <ApartmentRounded />, text: 'Filiais' },
+        { to: 'units', icon: <ApartmentRounded />, text: 'Unidades' },
     ]
 
     return (

@@ -5,6 +5,7 @@ import Dashboard from './components/pages/Dashboard'
 import Funnel from './components/pages/Funnel/Funnel'
 import Login from './components/pages/Login/Login'
 import NotFound from './components/pages/NotFound/NotFound'
+import Units from './components/pages/Units/Units'
 
 function AppRouter() {
     const routes = [
@@ -31,6 +32,10 @@ function AppRouter() {
                 {
                     path: 'budgets/new',
                     element: <NewBudget />,
+                },
+                {
+                    path: 'units',
+                    element: <Units />,
                 },
             ],
         },

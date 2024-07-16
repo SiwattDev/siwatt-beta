@@ -12,10 +12,12 @@ import {
     useTheme,
 } from '@mui/material'
 import React, { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import LogoIcon from '../../../assets/icon-logo.png'
-import LogoText from '../../../assets/logo.png'
+import LogoIcon from '../../../assets/icon-logo.webp'
+import LogoText from '../../../assets/logo.webp'
 import { DarkModeContext } from '../../../contexts/DarkModeContext'
+import useAuth from '../../../hooks/useAuth'
 import SearchNavigator from './SearchNavigator/SearchNavigator'
 
 const Container = styled.header`
@@ -32,6 +34,8 @@ export default function Header() {
     const open = Boolean(anchorEl)
     const theme = useTheme()
     const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
+    const { logout } = useAuth()
+    const navigate = useNavigate()
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget)
@@ -49,8 +53,15 @@ export default function Header() {
                     marginRight: '10px',
                 }}
             >
-                <img src={LogoIcon} width='35' height='35' />
-                {isMdUp && <img src={LogoText} height='25' className='ms-2' />}
+                <img src={LogoIcon} width='35' height='35' alt='Logo Siwatt' />
+                {isMdUp && (
+                    <img
+                        src={LogoText}
+                        height='25'
+                        className='ms-2'
+                        alt='Nome Siwatt'
+                    />
+                )}
             </Box>
             <SearchNavigator />
             <Box
@@ -59,7 +70,7 @@ export default function Header() {
                     flexWrap: 'nowrap',
                 }}
             >
-                <IconButton onClick={toggleTheme}>
+                <IconButton onClick={toggleTheme} aria-label='Mudar tema'>
                     {darkMode ? <LightModeRounded /> : <DarkModeRounded />}
                 </IconButton>
                 <IconButton
@@ -67,6 +78,7 @@ export default function Header() {
                     aria-controls={open ? 'basic-menu' : undefined}
                     aria-haspopup='true'
                     aria-expanded={open ? 'true' : undefined}
+                    aria-label='Ações da conta'
                 >
                     <AccountCircleRounded />
                 </IconButton>
@@ -81,7 +93,15 @@ export default function Header() {
                 >
                     <MenuItem onClick={handleClose}>Profile</MenuItem>
                     <MenuItem onClick={handleClose}>My account</MenuItem>
-                    <MenuItem onClick={handleClose}>Logout</MenuItem>
+                    <MenuItem
+                        onClick={() => {
+                            handleClose()
+                            logout()
+                            navigate('/')
+                        }}
+                    >
+                        Logout
+                    </MenuItem>
                 </Menu>
             </Box>
         </Container>

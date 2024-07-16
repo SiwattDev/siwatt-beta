@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlertContext } from '../../../contexts/AlertContext'
 import { baseURL } from '../../../globals'
+import useUtils from '../../../hooks/useUtils'
 import { Budget } from '../../../types/BudgetTypes'
 import Loading from '../../template/Loading/Loading'
 import PageHeader from '../../template/PageHeader/PageHeader'
@@ -15,6 +16,7 @@ export default function Budgets() {
     const [budgets, setBudgets] = useState<Budget[]>([])
     const navigate = useNavigate()
     const { showAlert } = useContext(AlertContext)
+    const { backendErros } = useUtils()
 
     useEffect(() => {
         const getBudgets = async () => {
@@ -37,11 +39,11 @@ export default function Budgets() {
                 setBudgets(response.data)
                 setLoading(false)
             } catch (error) {
+                console.log(error)
                 const err: any = error
-                showAlert({
-                    message: `Erro ao buscar os orçamentos: ${err.code}`,
-                    type: 'error',
-                })
+                const code = err?.response?.data?.code || err.code
+                const message = backendErros(code) || err.message
+                showAlert({ message, type: 'error' })
                 setLoading(false)
             }
         }

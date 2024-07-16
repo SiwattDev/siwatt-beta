@@ -12,6 +12,7 @@ import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlertContext } from '../../../../contexts/AlertContext'
 import useAuth from '../../../../hooks/useAuth'
+import useUtils from '../../../../hooks/useUtils'
 import Loading from '../../../template/Loading/Loading'
 
 type User = {
@@ -45,6 +46,7 @@ export default function LoginForm({
     const { login } = useAuth()
     const navigate = useNavigate()
     const { showAlert } = useContext(AlertContext)
+    const { backendErros } = useUtils()
 
     const validateField = (
         name: string,
@@ -77,7 +79,8 @@ export default function LoginForm({
         setUserErrors((prevErrors) => ({ ...prevErrors, [name]: error }))
     }
 
-    const handleLogin = async () => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
         setLoading(true)
         const emailError = validateField('email', user.email)
         const passwordError = validateField('password', user.password)
@@ -95,9 +98,12 @@ export default function LoginForm({
                     await new Promise((resolve) => setTimeout(resolve, 1000))
                     navigate('/dashboard')
                 }
-            } catch (error: any) {
-                setLoading(false)
-                showAlert({ message: error.message, type: 'error' })
+            } catch (error) {
+                console.log(error)
+                const err: any = error
+                const code = err?.response?.data?.code || err.code
+                const message = backendErros(code) || err.message
+                showAlert({ message, type: 'error' })
             }
         } else {
             showAlert({ message: 'Campos inválidos', type: 'error' })
@@ -106,22 +112,24 @@ export default function LoginForm({
     }
 
     return (
-        <>
+        <form onSubmit={handleLogin}>
             <TextField
                 label='Email'
                 name='email'
+                type='email'
                 variant='standard'
                 fullWidth
-                className='mb-3 mt-4'
+                className='mb-5 mt-4'
                 value={user.email}
                 onChange={handleChange}
-                error={userErrors.email?.error}
+                error={!!userErrors.email?.error}
                 helperText={userErrors.email?.message}
+                aria-label='Email'
             />
             <FormControl
                 variant='standard'
                 fullWidth
-                error={userErrors.password?.error}
+                error={!!userErrors.password?.error}
             >
                 <InputLabel>Senha</InputLabel>
                 <Input
@@ -143,6 +151,7 @@ export default function LoginForm({
                             </IconButton>
                         </InputAdornment>
                     }
+                    aria-label='Senha'
                 />
                 {userErrors.password?.message && (
                     <p
@@ -156,20 +165,25 @@ export default function LoginForm({
                     </p>
                 )}
             </FormControl>
-            <a href='#' onClick={() => setForgotPassword(!forgotPassword)}>
+            <a
+                href='#'
+                onClick={() => setForgotPassword(!forgotPassword)}
+                className='d-block text-decoration-none mt-3'
+            >
                 {forgotPassword ? 'Lembrei minha senha' : 'Esqueci minha senha'}
             </a>
             <Button
                 variant='contained'
                 className='mt-5 rounded-pill'
                 fullWidth
-                onClick={handleLogin}
+                type='submit'
+                aria-label='Entrar'
             >
                 Entrar
             </Button>
             {loading && (
                 <Loading fullPage message='Tentando conectar você...' />
             )}
-        </>
+        </form>
     )
 }

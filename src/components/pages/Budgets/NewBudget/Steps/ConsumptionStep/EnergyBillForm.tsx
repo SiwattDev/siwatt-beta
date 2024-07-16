@@ -14,6 +14,7 @@ import React, { useContext, useState } from 'react'
 import { AlertContext } from '../../../../../../contexts/AlertContext'
 import { BudgetContext } from '../../../../../../contexts/BudgetContext'
 import { baseURL } from '../../../../../../globals'
+import useUtils from '../../../../../../hooks/useUtils'
 import { EnergyBill } from '../../../../../../types/BudgetTypes'
 import FileLoader from '../../../../../template/FileLoader/FileLoader'
 
@@ -34,6 +35,7 @@ export default function EnergyBillForm({
     const [billImage, setBillImage] = useState<File | null>(null)
     const [chartImage, setChartImage] = useState<File | null>(null)
     const { showAlert } = useContext(AlertContext)
+    const { backendErros } = useUtils()
     const months = [
         'JAN',
         'FEV',
@@ -62,11 +64,11 @@ export default function EnergyBillForm({
         try {
             const formData1 = new FormData()
             formData1.append('file', billImage)
-            formData1.append('destinationPath', '/energyBills')
+            formData1.append('destinationPath', 'energyBills')
 
             const formData2 = new FormData()
             formData2.append('file', chartImage)
-            formData2.append('destinationPath', '/energyBills')
+            formData2.append('destinationPath', 'energyBills')
 
             const [response1, response2] = await Promise.all([
                 axios.post(`${baseURL}/files`, formData1),
@@ -92,11 +94,11 @@ export default function EnergyBillForm({
 
             onClose(newEnergyBill)
         } catch (error) {
-            console.error('Erro ao enviar as imagens:', error)
-            showAlert({
-                message: 'Erro ao enviar as imagens.',
-                type: 'error',
-            })
+            console.log(error)
+            const err: any = error
+            const code = err?.response?.data?.code || err.code
+            const message = backendErros(code) || err.message
+            showAlert({ message, type: 'error' })
         } finally {
             setLoading(false)
         }

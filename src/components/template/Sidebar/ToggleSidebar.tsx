@@ -31,7 +31,10 @@ export default function ToggleSidebar({
     const theme = useTheme()
 
     return (
-        <ToggleSidebarContainer onClick={onClick}>
+        <ToggleSidebarContainer
+            onClick={onClick}
+            aria-label='Mostrar/Esconder barra lateral'
+        >
             <svg
                 viewBox='0 0 14 60'
                 style={{

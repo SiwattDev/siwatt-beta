@@ -30,6 +30,8 @@ export default function Selects() {
     const { budget, setBudget } = useContext(BudgetContext)
     const [states, setStates] = useState<State[]>([])
     const [cities, setCities] = useState<City[]>([])
+    const [loadingStates, setLoadingStates] = useState(true)
+    const [loadingCities, setLoadingCities] = useState(true)
 
     useEffect(() => {
         const fetchStates = async () => {
@@ -37,6 +39,7 @@ export default function Selects() {
                 'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
             )
             setStates(response.data)
+            setLoadingStates(false)
         }
 
         fetchStates()
@@ -44,15 +47,17 @@ export default function Selects() {
 
     useEffect(() => {
         const fetchCities = async () => {
-            if (!budget.uf) return
+            if (!budget.solarPlantSite?.uf) return
+            setLoadingCities(true)
             const response = await axios.get(
-                `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${budget.uf}/municipios`
+                `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${budget.solarPlantSite.uf}/municipios`
             )
             setCities(response.data)
+            setLoadingCities(false)
         }
 
         fetchCities()
-    }, [budget.uf])
+    }, [budget.solarPlantSite?.uf])
 
     return (
         <Box>
@@ -88,11 +93,20 @@ export default function Selects() {
                 <Select
                     label='Estado'
                     required
-                    value={budget.uf || ''}
+                    value={loadingStates ? '' : budget.solarPlantSite?.uf || ''}
                     onChange={(event) =>
-                        setBudget({ ...budget, uf: event.target.value })
+                        setBudget({
+                            ...budget,
+                            solarPlantSite: {
+                                ...budget.solarPlantSite,
+                                uf: event.target.value,
+                            },
+                        })
                     }
                 >
+                    <MenuItem value=''>
+                        <em>-- Selecione o estado --</em>
+                    </MenuItem>
                     {states.map((state) => (
                         <MenuItem key={state.id} value={state.sigla}>
                             {state.sigla}
@@ -105,11 +119,20 @@ export default function Selects() {
                 <Select
                     label='Cidade'
                     required
-                    value={budget.cityName || ''}
+                    value={
+                        loadingCities ? '' : budget.solarPlantSite?.city || ''
+                    }
                     onChange={(event) =>
-                        setBudget({ ...budget, cityName: event.target.value })
+                        setBudget({
+                            ...budget,
+                            solarPlantSite: {
+                                ...budget.solarPlantSite,
+                                city: event.target.value,
+                            },
+                        })
                     }
                 >
+                    <MenuItem value=''>-- Selecione a cidade --</MenuItem>
                     {cities.map((city) => (
                         <MenuItem key={city.id} value={city.nome}>
                             {city.nome}

@@ -13,21 +13,27 @@ type AlertContext = {
 
 const AlertContext = createContext({} as AlertContext)
 
+const truncateMessage = (message: string, limit: number): string => {
+    return message.length > limit ? message.slice(0, limit) + '...' : message
+}
+
 const AlertProvider = ({ children }: { children: ReactNode }) => {
     const theme = useTheme()
     const showAlert = ({ message, type }: Alert) => {
+        const truncatedMessage = truncateMessage(message, 50)
+
         switch (type) {
             case 'success':
-                toast.success(message)
+                toast.success(truncatedMessage)
                 break
             case 'warning':
-                toast.warning(message)
+                toast.warning(truncatedMessage)
                 break
             case 'info':
-                toast.info(message)
+                toast.info(truncatedMessage)
                 break
             case 'error':
-                toast.error(message)
+                toast.error(truncatedMessage)
                 break
             default:
         }

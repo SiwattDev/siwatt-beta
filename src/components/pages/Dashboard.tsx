@@ -9,7 +9,7 @@ import { UserContext } from '../../contexts/UserContext'
 import { auth } from '../../firebase'
 import { baseURL } from '../../globals'
 import useAuth from '../../hooks/useAuth'
-import { Error } from '../../types/BackendError'
+import useUtils from '../../hooks/useUtils'
 import Content from '../template/Content/Content'
 import Header from '../template/Header/Header'
 import Loading from '../template/Loading/Loading'
@@ -34,6 +34,7 @@ export default function Dashboard() {
     const navigate = useNavigate()
     const { logout } = useAuth()
     const { showAlert } = useContext(AlertContext)
+    const { backendErros } = useUtils()
 
     useEffect(() => {
         const subscribe = onAuthStateChanged(auth, async (user) => {
@@ -54,15 +55,17 @@ export default function Dashboard() {
 
                     setUser(userData.data)
                     setLoading(false)
-                } catch (error) {
-                    const err: any = error
-                    const errData: Error = err.response?.data
-                    console.log('Erro:', error)
-                    logout()
                     showAlert({
-                        message: `Erro ao buscar os dados do usuário: ${errData.message}`,
-                        type: 'error',
+                        message: 'Entrou como ' + userData.data.name,
+                        type: 'success',
                     })
+                } catch (error: any) {
+                    console.log(error)
+                    const err: any = error
+                    const code = err?.response?.data?.code || err.code
+                    const message = backendErros(code) || err.message
+                    showAlert({ message, type: 'error' })
+                    logout()
                     navigate('/')
                 }
             } else {

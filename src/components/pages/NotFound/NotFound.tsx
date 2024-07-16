@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material'
-import IconLogo from '/src/assets/404.png'
+import { Box, Typography, useTheme } from '@mui/material'
+import IconLogo from '/src/assets/404.webp'
 
 type NotFoundProps = {
     fullPage?: boolean
@@ -12,6 +12,8 @@ export default function NotFound({
     title = '404',
     message = 'Página não encontrada',
 }: NotFoundProps) {
+    const theme = useTheme()
+
     return (
         <Box
             sx={{
@@ -19,6 +21,9 @@ export default function NotFound({
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: fullPage ? '100vh' : '100%',
+                backgroundColor: fullPage
+                    ? theme.palette.background.paper
+                    : 'transparent',
             }}
         >
             <Box
@@ -49,11 +54,14 @@ export default function NotFound({
                 >
                     <Typography
                         variant={title === '404' ? 'h1' : 'h4'}
-                        sx={{ maxWidth: '404px' }}
+                        sx={{ maxWidth: '404px', color: 'text.primary' }}
                     >
                         {title}
                     </Typography>
-                    <Typography variant='body1' sx={{ maxWidth: '404px' }}>
+                    <Typography
+                        variant='body1'
+                        sx={{ maxWidth: '404px', color: 'text.primary' }}
+                    >
                         {message}
                     </Typography>
                 </Box>
