@@ -47,6 +47,8 @@ export default function UnitsForm({
     const [cnpjData, setCnpjData] = useState<CnpjData | null>(null)
     const [loading, setLoading] = useState(false)
     const [saving, setSaving] = useState(false)
+    const [nameError, setNameError] = useState<string | null>(null)
+    const [cnpjError, setCnpjError] = useState<string | null>(null)
     const { extractNumbers, getNumberString, backendErros } = useUtils()
     const { APICNPJ, APICep } = useAPI()
     const { showAlert } = useContext(AlertContext)
@@ -149,6 +151,22 @@ export default function UnitsForm({
         }
     }, [unit.cnpj])
 
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newName = e.target.value
+        setUnit({ ...unit, name: newName })
+        setNameError(
+            newName.length >= 5
+                ? null
+                : 'O nome deve ter pelo menos 5 caracteres'
+        )
+    }
+
+    const handleCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newCnpj = getNumberString(e.target.value.toString())
+        setUnit({ ...unit, cnpj: newCnpj })
+        setCnpjError(isCNPJ(newCnpj) ? null : 'CNPJ inválido')
+    }
+
     const saveUnit = async () => {
         try {
             setSaving(true)
@@ -206,28 +224,27 @@ export default function UnitsForm({
                     autoFocus
                     size='small'
                     value={unit.name}
-                    onChange={(e) => setUnit({ ...unit, name: e.target.value })}
+                    onChange={handleNameChange}
                     label='Nome'
                     aria-label='Nome'
                     fullWidth
                     className='mb-3'
                     disabled={loading}
+                    error={!!nameError}
+                    helperText={nameError}
                 />
                 <TextField
                     size='small'
                     value={
                         isCNPJ(unit.cnpj) ? formatToCNPJ(unit.cnpj) : unit.cnpj
                     }
-                    onChange={(e) =>
-                        setUnit({
-                            ...unit,
-                            cnpj: getNumberString(e.target.value.toString()),
-                        })
-                    }
+                    onChange={handleCnpjChange}
                     label='CNPJ'
                     aria-label='CNPJ'
                     fullWidth
                     disabled={loading}
+                    error={!!cnpjError}
+                    helperText={cnpjError}
                 />
                 {cnpjData && !loading && (
                     <Box>
