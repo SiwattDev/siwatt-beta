@@ -37,12 +37,16 @@ export default function Units() {
             setUnits(response.data)
             setLoading(false)
         } catch (error) {
+            setUnits([])
             setLoading(false)
             console.log(error)
             const err: any = error
             const code = err?.response?.data?.code || err.code
             const message = backendErros(code) || err.message
-            showAlert({ message, type: 'error' })
+            showAlert({
+                message,
+                type: code === 'DOCUMENTS_NOT_FOUND' ? 'warning' : 'error',
+            })
         }
     }
 
