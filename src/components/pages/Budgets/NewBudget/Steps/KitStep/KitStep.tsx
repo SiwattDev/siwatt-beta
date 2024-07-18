@@ -37,8 +37,10 @@ export default function KitStep() {
     }, [])
 
     return (
-        <Box>
-            <Typography variant='h6'>Selecione o Kit</Typography>
+        <Box className='w-100'>
+            <Typography variant='h6' className='mb-3'>
+                Selecione o Kit
+            </Typography>
             {suggestedKits.map((kit) => (
                 <KitItem key={kit.id} kit={kit} />
             ))}

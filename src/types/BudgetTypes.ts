@@ -1,25 +1,19 @@
 import { Client, Seller } from './EntityTypes'
 
+type Product = {
+    id: string
+    model: string
+    unitPrice: number
+    amount?: number // depreciated
+    quantity?: number
+    totalPrice: number
+    power: number
+}
+
 type Kit = {
     id: string
-    modules: {
-        id: string
-        model: string
-        unitPrice: number
-        amount?: number // depreciated
-        quantity?: number
-        totalPrice: number
-        power: number
-    }
-    inverter: {
-        id: string
-        model: string
-        unitPrice: number
-        amount?: number // depreciated
-        quantity?: number
-        totalPrice: number
-        maxPower: number
-    }
+    modules: Product
+    inverter: Product
 }
 
 type EnergyBill = {
@@ -57,4 +51,4 @@ type Budget = {
     status: string
 }
 
-export type { Budget, Consumption, EnergyBill, Kit }
+export type { Budget, Consumption, EnergyBill, Kit, Product }
