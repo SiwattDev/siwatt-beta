@@ -11,6 +11,7 @@ import {
 import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import { BudgetContext } from '../../../../../../contexts/BudgetContext'
+import { UserContext } from '../../../../../../contexts/UserContext'
 import { baseURL } from '../../../../../../globals'
 import { Client } from '../../../../../../types/EntityTypes'
 
@@ -18,6 +19,7 @@ export default function ClientStep() {
     const [clients, setClients] = useState<Client[]>([])
     const { budget, setBudget } = useContext(BudgetContext)
     const [selectedClient, setSelectedClient] = useState<string>('')
+    const { user } = useContext(UserContext)
 
     useEffect(() => {
         if (typeof budget.client === 'string') {
@@ -31,7 +33,7 @@ export default function ClientStep() {
         const getClients = async () => {
             const response = await axios.get(`${baseURL}/docs`, {
                 params: {
-                    user: 'AbeLZE8meAfox9FFa07HeseFkww2',
+                    user: user.id,
                     path: 'clients',
                 },
             })

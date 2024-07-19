@@ -96,8 +96,10 @@ export default function EnergyBillForm({
         } catch (error) {
             console.log(error)
             const err: any = error
-            const code = err?.response?.data?.code || err.code
-            const message = backendErros(code) || err.message
+            const code =
+                err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+            const message =
+                backendErros(code) || err.message || 'Erro inesperado'
             showAlert({ message, type: 'error' })
         } finally {
             setLoading(false)

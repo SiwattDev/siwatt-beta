@@ -4,6 +4,7 @@ import axios from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlertContext } from '../../../contexts/AlertContext'
+import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
 import useUtils from '../../../hooks/useUtils'
 import { Budget } from '../../../types/BudgetTypes'
@@ -17,13 +18,14 @@ export default function Budgets() {
     const navigate = useNavigate()
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
+    const { user } = useContext(UserContext)
 
     useEffect(() => {
         const getBudgets = async () => {
             try {
                 const response = await axios.get(`${baseURL}/docs`, {
                     params: {
-                        user: 'AbeLZE8meAfox9FFa07HeseFkww2',
+                        user: user.id,
                         path: 'budgets',
                     },
                 })
@@ -41,8 +43,10 @@ export default function Budgets() {
             } catch (error) {
                 console.log(error)
                 const err: any = error
-                const code = err?.response?.data?.code || err.code
-                const message = backendErros(code) || err.message
+                const code =
+                    err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+                const message =
+                    backendErros(code) || err.message || 'Erro inesperado'
                 showAlert({ message, type: 'error' })
                 setLoading(false)
             }

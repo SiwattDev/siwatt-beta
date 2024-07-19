@@ -15,6 +15,7 @@ import axios from 'axios'
 import { formatToCNPJ } from 'brazilian-values'
 import React, { useContext, useState } from 'react'
 import { AlertContext } from '../../../contexts/AlertContext'
+import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
 import { useConfirm } from '../../../hooks/useConfirm'
 import useUtils from '../../../hooks/useUtils'
@@ -38,6 +39,7 @@ export default function UnitItem({
     const { showConfirm, confirmState } = useConfirm()
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
+    const { user } = useContext(UserContext)
 
     const deleteUnit = (id: string) => {
         showConfirm({
@@ -46,7 +48,7 @@ export default function UnitItem({
             onConfirm: async () => {
                 try {
                     const response = await axios.delete(
-                        `${baseURL}/doc?user=AbeLZE8meAfox9FFa07HeseFkww2`,
+                        `${baseURL}/doc?user=${user.id}`,
                         {
                             params: {
                                 path: 'units',
@@ -65,8 +67,10 @@ export default function UnitItem({
                 } catch (error) {
                     console.log(error)
                     const err: any = error
-                    const code = err?.response?.data?.code || err.code
-                    const message = backendErros(code) || err.message
+                    const code =
+                        err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+                    const message =
+                        backendErros(code) || err.message || 'Erro inesperado'
                     showAlert({ message, type: 'error' })
                 }
             },

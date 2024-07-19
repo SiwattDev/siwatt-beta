@@ -41,16 +41,18 @@ function KitProduct({ product }: { product: Product }) {
     )
 }
 
-export default function KitItem({ kit }: { kit: Kit }) {
+export default function KitItem({
+    kit,
+    setKit,
+}: {
+    kit: Kit
+    setKit: (id: string, kit: Kit) => void
+}) {
     const [open, setOpen] = useState<boolean>(false)
     const { budget, setBudget } = useContext(BudgetContext)
     const theme = useTheme()
 
     const handleSelectKit = () => {
-        setBudget({ ...budget, kit })
-    }
-
-    const setKit = (kit: Kit) => {
         setBudget({ ...budget, kit })
     }
 
@@ -119,7 +121,7 @@ export default function KitItem({ kit }: { kit: Kit }) {
             </Paper>
             <KitModal
                 kit={kit}
-                setKit={setKit}
+                setKit={(kit) => setKit(kit.id, kit)}
                 open={open}
                 onClose={() => setOpen(false)}
             />

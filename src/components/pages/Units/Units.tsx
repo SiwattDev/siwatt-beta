@@ -3,6 +3,7 @@ import { Box, Fab, Grid, Tooltip } from '@mui/material'
 import axios from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
 import { AlertContext } from '../../../contexts/AlertContext'
+import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
 import useUtils from '../../../hooks/useUtils'
 import Loading from '../../template/Loading/Loading'
@@ -23,13 +24,14 @@ export default function Units() {
     const [units, setUnits] = useState<Unit[]>([])
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
+    const { user } = useContext(UserContext)
 
     const getUnits = async () => {
         setLoading(true)
         try {
             const response = await axios.get(`${baseURL}/docs`, {
                 params: {
-                    user: 'AbeLZE8meAfox9FFa07HeseFkww2',
+                    user: user.id,
                     path: 'units',
                 },
             })
@@ -41,8 +43,10 @@ export default function Units() {
             setLoading(false)
             console.log(error)
             const err: any = error
-            const code = err?.response?.data?.code || err.code
-            const message = backendErros(code) || err.message
+            const code =
+                err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+            const message =
+                backendErros(code) || err.message || 'Erro inesperado'
             showAlert({
                 message,
                 type: code === 'DOCUMENTS_NOT_FOUND' ? 'warning' : 'error',

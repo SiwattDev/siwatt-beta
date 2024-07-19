@@ -13,6 +13,7 @@ import axios from 'axios'
 import { formatToCEP, formatToCNPJ, isCNPJ } from 'brazilian-values'
 import { useContext, useEffect, useState } from 'react'
 import { AlertContext } from '../../../contexts/AlertContext'
+import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
 import useAPI from '../../../hooks/useAPI'
 import useUtils from '../../../hooks/useUtils'
@@ -52,6 +53,7 @@ export default function UnitsForm({
     const { extractNumbers, getNumberString, backendErros } = useUtils()
     const { APICNPJ, APICep } = useAPI()
     const { showAlert } = useContext(AlertContext)
+    const { user } = useContext(UserContext)
 
     useEffect(() => {
         if (unitId) {
@@ -59,7 +61,7 @@ export default function UnitsForm({
             axios
                 .get(`${baseURL}/doc`, {
                     params: {
-                        user: 'AbeLZE8meAfox9FFa07HeseFkww2',
+                        user: user.id,
                         path: 'units',
                         id: unitId,
                     },
@@ -71,10 +73,11 @@ export default function UnitsForm({
                 })
                 .catch((error) => {
                     console.log(error)
-                    setLoading(false)
                     const err: any = error
-                    const code = err?.response?.data?.code || err.code
-                    const message = backendErros(code) || err.message
+                    const code =
+                        err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+                    const message =
+                        backendErros(code) || err.message || 'Erro inesperado'
                     showAlert({ message, type: 'error' })
                 })
         }
@@ -175,21 +178,15 @@ export default function UnitsForm({
             if (!isCNPJ(unit.cnpj)) throw new Error('CNPJ inválido')
 
             const response = unitId
-                ? await axios.put(
-                      `${baseURL}/doc?user=AbeLZE8meAfox9FFa07HeseFkww2`,
-                      {
-                          path: 'units',
-                          id: unitId,
-                          data: unit,
-                      }
-                  )
-                : await axios.post(
-                      `${baseURL}/doc?user=AbeLZE8meAfox9FFa07HeseFkww2`,
-                      {
-                          path: 'units',
-                          data: unit,
-                      }
-                  )
+                ? await axios.put(`${baseURL}/doc?user=${user.id}`, {
+                      path: 'units',
+                      id: unitId,
+                      data: unit,
+                  })
+                : await axios.post(`${baseURL}/doc?user=${user.id}`, {
+                      path: 'units',
+                      data: unit,
+                  })
 
             if (!response.data) throw new Error('Erro ao salvar filial')
 
@@ -201,8 +198,10 @@ export default function UnitsForm({
         } catch (error) {
             console.log(error)
             const err: any = error
-            const code = err?.response?.data?.code || err.code
-            const message = backendErros(code) || err.message
+            const code =
+                err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+            const message =
+                backendErros(code) || err.message || 'Erro inesperado'
             showAlert({ message, type: 'error' })
         } finally {
             setSaving(false)
