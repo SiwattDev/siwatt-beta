@@ -6,17 +6,12 @@ import { AlertContext } from '../../../contexts/AlertContext'
 import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
 import useUtils from '../../../hooks/useUtils'
+import { Unit } from '../../../types/UnitType'
 import Loading from '../../template/Loading/Loading'
 import PageHeader from '../../template/PageHeader/PageHeader'
 import NotFound from '../NotFound/NotFound'
 import UnitItem from './UnitItem'
 import BranchesForm from './UnitsForm'
-
-type Unit = {
-    id: string
-    name: string
-    cnpj: string
-}
 
 export default function Units() {
     const [open, setOpen] = useState(false)

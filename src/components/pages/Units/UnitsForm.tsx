@@ -15,25 +15,9 @@ import { useContext, useEffect, useState } from 'react'
 import { AlertContext } from '../../../contexts/AlertContext'
 import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
-import useAPI from '../../../hooks/useAPI'
 import useUtils from '../../../hooks/useUtils'
-
-type Unit = {
-    id?: string
-    name: string
-    cnpj: string
-}
-
-type CnpjData = {
-    type: string | null
-    address: {
-        cep: string | null
-        locality: string | null
-        street: string | null
-        uf: string | null
-    }
-    email: string | null
-}
+import { CnpjData } from '../../../types/CNPJType'
+import { Unit } from '../../../types/UnitType'
 
 export default function UnitsForm({
     open,
@@ -50,8 +34,7 @@ export default function UnitsForm({
     const [saving, setSaving] = useState(false)
     const [nameError, setNameError] = useState<string | null>(null)
     const [cnpjError, setCnpjError] = useState<string | null>(null)
-    const { extractNumbers, getNumberString, backendErros } = useUtils()
-    const { APICNPJ, APICep } = useAPI()
+    const { getCnpjData, getNumberString, backendErros } = useUtils()
     const { showAlert } = useContext(AlertContext)
     const { user } = useContext(UserContext)
 
@@ -84,74 +67,21 @@ export default function UnitsForm({
     }, [unitId])
 
     useEffect(() => {
-        if (isCNPJ(unit.cnpj)) {
+        const fetchCnpjData = async () => {
             setLoading(true)
-            APICNPJ(extractNumbers(unit.cnpj))
-                .then((data: any) => {
-                    if (data?.data?.estabelecimento?.cnpj) {
-                        const newCnpjData: CnpjData = {
-                            type: data.data.estabelecimento.tipo || null,
-                            address: {
-                                cep: data.data.estabelecimento.cep || null,
-                                locality: null,
-                                street: null,
-                                uf: null,
-                            },
-                            email: data.data.estabelecimento.email || null,
-                        }
-                        setCnpjData(newCnpjData)
+            const cnpjData = await getCnpjData(unit.cnpj)
+            if (!cnpjData) {
+                showAlert({ message: 'CNPJ inválido', type: 'error' })
+                setCnpjData(null)
+                setLoading(false)
+                return
+            }
 
-                        APICep(data.data.estabelecimento.cep)
-                            .then((cepData: any) => {
-                                setLoading(false)
-                                setCnpjData((prevCnpjData) =>
-                                    prevCnpjData
-                                        ? {
-                                              ...prevCnpjData,
-                                              address: {
-                                                  ...prevCnpjData.address,
-                                                  locality:
-                                                      cepData.data.localidade ||
-                                                      null,
-                                                  street:
-                                                      cepData.data.logradouro ||
-                                                      null,
-                                                  uf: cepData.data.uf || null,
-                                              },
-                                          }
-                                        : null
-                                )
-                            })
-                            .catch(() => {
-                                setLoading(false)
-                                showAlert({
-                                    message: 'Erro ao buscar dados do CEP',
-                                    type: 'error',
-                                })
-                                setCnpjData((prevCnpjData) =>
-                                    prevCnpjData
-                                        ? {
-                                              ...prevCnpjData,
-                                              address: {
-                                                  ...prevCnpjData.address,
-                                                  locality: null,
-                                                  street: null,
-                                                  uf: null,
-                                              },
-                                          }
-                                        : null
-                                )
-                            })
-                    }
-                })
-                .catch(() => {
-                    setLoading(false)
-                    showAlert({
-                        message: 'Erro ao buscar dados do CNPJ',
-                        type: 'error',
-                    })
-                })
+            setLoading(false)
+            setCnpjData(cnpjData)
         }
+
+        if (isCNPJ(unit.cnpj)) fetchCnpjData()
     }, [unit.cnpj])
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

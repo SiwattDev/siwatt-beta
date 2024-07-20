@@ -1,4 +1,40 @@
+import axios from 'axios'
+import { isCNPJ } from 'brazilian-values'
+import { useContext } from 'react'
+import { AlertContext } from '../contexts/AlertContext'
+import { BudgetContext } from '../contexts/BudgetContext'
+import { baseURL } from '../globals'
+import { Consumption } from '../types/BudgetTypes'
+import { CnpjData } from '../types/CNPJType'
+import useAPI from './useAPI'
+
+type Month =
+    | 'JAN'
+    | 'FEV'
+    | 'MAR'
+    | 'ABR'
+    | 'MAI'
+    | 'JUN'
+    | 'JUL'
+    | 'AGO'
+    | 'SET'
+    | 'OUT'
+    | 'NOV'
+    | 'DEZ'
+
+type GetNeededPowerProps = {
+    averageConsumption: number
+    networkType: 'single-phase' | 'two-phase' | 'three-phase'
+    solarIrradiation: number
+}
+
+type SolarIrradiation = number[]
+
 export default () => {
+    const { showAlert } = useContext(AlertContext)
+    const { APICNPJ, APICep } = useAPI()
+    const { budget } = useContext(BudgetContext)
+
     const extractNumbers = (inputString: string) => {
         let numberString = inputString.replace(/\D/g, '')
         let number = Number(numberString)
@@ -67,5 +103,135 @@ export default () => {
         }
     }
 
-    return { extractNumbers, getNumberString, backendErros }
+    const getCnpjData = async (cnpj: string): Promise<CnpjData | null> => {
+        if (!isCNPJ(cnpj)) {
+            showAlert({
+                message: 'CNPJ inválido',
+                type: 'error',
+            })
+            return null
+        }
+
+        try {
+            const data = await APICNPJ(cnpj)
+            if (data?.estabelecimento?.cnpj) {
+                const newCnpjData: CnpjData = {
+                    type: data.estabelecimento.tipo || null,
+                    address: {
+                        cep: data.estabelecimento.cep || null,
+                        locality: null,
+                        street: null,
+                        uf: null,
+                    },
+                    email: data.estabelecimento.email || null,
+                }
+
+                if (data.estabelecimento.cep) {
+                    try {
+                        const cepData = await APICep(data.estabelecimento.cep)
+                        newCnpjData.address.locality =
+                            cepData.localidade || null
+                        newCnpjData.address.street = cepData.logradouro || null
+                        newCnpjData.address.uf = cepData.uf || null
+                    } catch {
+                        showAlert({
+                            message: 'Erro ao buscar dados do CEP',
+                            type: 'error',
+                        })
+                        newCnpjData.address.locality = null
+                        newCnpjData.address.street = null
+                        newCnpjData.address.uf = null
+                    }
+                }
+                return newCnpjData
+            } else {
+                showAlert({
+                    message: 'CNPJ não encontrado',
+                    type: 'error',
+                })
+                return null
+            }
+        } catch {
+            showAlert({
+                message: 'Erro ao buscar dados do CNPJ',
+                type: 'error',
+            })
+            return null
+        }
+    }
+
+    const calculateAverageEnergyBill = (consumption: Consumption): number => {
+        let monthlyTotal: Record<Month, number> = {
+            JAN: 0,
+            FEV: 0,
+            MAR: 0,
+            ABR: 0,
+            MAI: 0,
+            JUN: 0,
+            JUL: 0,
+            AGO: 0,
+            SET: 0,
+            OUT: 0,
+            NOV: 0,
+            DEZ: 0,
+        }
+
+        if (consumption.energyBills.length === 0) return 0
+
+        consumption.energyBills.forEach((bill) => {
+            Object.entries(bill.months).forEach(([month, value]) => {
+                if (monthlyTotal.hasOwnProperty(month as Month)) {
+                    monthlyTotal[month as Month] += Number(value)
+                }
+            })
+        })
+
+        let totalConsumption = Object.values(monthlyTotal).reduce(
+            (total, value) => total + value,
+            0
+        )
+        let totalMonths = Object.keys(monthlyTotal).length as number
+
+        return totalConsumption / totalMonths
+    }
+
+    const getNeededPower = ({
+        averageConsumption = 0,
+        networkType = 'single-phase',
+        solarIrradiation = 0,
+    }: GetNeededPowerProps) => {
+        const networkTypeValues = {
+            'single-phase': 30,
+            'two-phase': 50,
+            'three-phase': 100,
+        }
+
+        const networkTypeValue = networkTypeValues[networkType]
+        const average = solarIrradiation
+        const result =
+            (averageConsumption - networkTypeValue) / 30 / (average * 0.75)
+
+        return result
+    }
+
+    const getSolarIrradiation = async (): Promise<SolarIrradiation> => {
+        const response = await axios.get(`${baseURL}/solar-irradiation`, {
+            params: { cityName: budget.solarPlantSite.city },
+        })
+
+        if (response.status !== 200)
+            throw new Error('Erro ao buscar irradiação solar')
+
+        return response.data.solarIrradiation
+    }
+
+    return {
+        extractNumbers,
+        getNumberString,
+        backendErros,
+        getCnpjData,
+        calculateAverageEnergyBill,
+        getNeededPower,
+        getSolarIrradiation,
+    }
 }

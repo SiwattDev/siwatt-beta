@@ -19,14 +19,10 @@ import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
 import { useConfirm } from '../../../hooks/useConfirm'
 import useUtils from '../../../hooks/useUtils'
+import { Unit } from '../../../types/UnitType'
 import Confirm from '../../template/Confirm/Confirm'
+import UnitDetails from './UnitDetails'
 import UnitsForm from './UnitsForm'
-
-type Unit = {
-    id: string
-    name: string
-    cnpj: string
-}
 
 export default function UnitItem({
     unit,
@@ -35,13 +31,21 @@ export default function UnitItem({
     unit: Unit
     refresh: () => void
 }) {
-    const [open, setOpen] = useState(false)
+    const [formOpen, setFormOpen] = useState(false)
+    const [detailsOpen, setDetailsOpen] = useState(false)
     const { showConfirm, confirmState } = useConfirm()
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
     const { user } = useContext(UserContext)
 
     const deleteUnit = (id: string) => {
+        if (!id) {
+            showAlert({
+                message: 'Erro ao excluir unidade',
+                type: 'error',
+            })
+            return
+        }
         showConfirm({
             title: 'Excluir unidade',
             message: 'Tem certeza que deseja excluir esta unidade?',
@@ -95,19 +99,19 @@ export default function UnitItem({
                         className='mt-2'
                     >
                         <Tooltip title='Ver'>
-                            <Button>
+                            <Button onClick={() => setDetailsOpen(true)}>
                                 <VisibilityRounded fontSize='small' />
                             </Button>
                         </Tooltip>
                         <Tooltip title='Editar'>
-                            <Button onClick={() => setOpen(true)}>
+                            <Button onClick={() => setFormOpen(true)}>
                                 <EditRounded fontSize='small' />
                             </Button>
                         </Tooltip>
                         <Tooltip title='Excluir'>
                             <Button
                                 color='error'
-                                onClick={() => deleteUnit(unit.id)}
+                                onClick={() => deleteUnit(unit.id ?? '')}
                             >
                                 <DeleteRounded fontSize='small' />
                             </Button>
@@ -115,11 +119,21 @@ export default function UnitItem({
                     </ButtonGroup>
                 </CardContent>
             </Card>
-            {open && (
-                <UnitsForm
-                    open={open}
+            {detailsOpen && (
+                <UnitDetails
+                    unit={unit}
+                    open={detailsOpen}
                     onClose={() => {
-                        setOpen(false)
+                        setDetailsOpen(false)
+                        refresh()
+                    }}
+                />
+            )}
+            {formOpen && (
+                <UnitsForm
+                    open={formOpen}
+                    onClose={() => {
+                        setFormOpen(false)
                         refresh()
                     }}
                     unitId={unit.id}

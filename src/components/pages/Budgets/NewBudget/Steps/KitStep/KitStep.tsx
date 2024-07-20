@@ -8,6 +8,7 @@ import { baseURL } from '../../../../../../globals'
 import useUtils from '../../../../../../hooks/useUtils'
 import { Kit } from '../../../../../../types/BudgetTypes'
 import Loading from '../../../../../template/Loading/Loading'
+import ReferenceHelper from '../ConsumptionStep/ReferenceHelper'
 import KitItem from './KitItem'
 
 export default function KitStep() {
@@ -61,7 +62,8 @@ export default function KitStep() {
 
     return (
         <Box className='w-100'>
-            <Typography variant='h6' className='mb-3'>
+            <ReferenceHelper />
+            <Typography variant='h6' className='mb-3 mt-3'>
                 Selecione o Kit
             </Typography>
             {suggestedKits.map((kit) => (

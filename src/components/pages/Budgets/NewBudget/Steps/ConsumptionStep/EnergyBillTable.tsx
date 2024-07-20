@@ -59,7 +59,9 @@ export default function EnergyBillTable() {
 
     return (
         <Box>
-            <Typography variant='h6'>Contas de Energia</Typography>
+            <Typography variant='h6' className='mb-2'>
+                Contas de Energia
+            </Typography>
             <TableContainer component={Paper} className='p-2' elevation={3}>
                 <Table size='small'>
                     <TableHead>
