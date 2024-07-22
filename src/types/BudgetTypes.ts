@@ -4,6 +4,7 @@ type Product = {
     id: string
     model: string
     unitPrice: number
+    price?: string // depreciated
     amount?: number // depreciated
     quantity?: number
     totalPrice: number

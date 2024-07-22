@@ -100,21 +100,35 @@ function ProductValues({
                 className='mb-3'
                 value={data.model || ''}
                 onChange={(e) => {
+                    console.log(e.target.value)
                     const selectedProduct = productOptions.find(
                         (product) => product.model === e.target.value
                     )
                     if (selectedProduct) {
-                        setData({
+                        const newProductData = {
                             ...data,
                             model: selectedProduct.model,
                             power: selectedProduct.power.toString(),
-                            unitPrice: selectedProduct.unitPrice.toString(),
-                        })
+                            unitPrice: extractNumbers(
+                                selectedProduct.price || '0'
+                            ).toString(),
+                            totalPrice: (
+                                parseFloat(data.quantity || '0') *
+                                parseFloat(
+                                    extractNumbers(selectedProduct.price || '0')
+                                )
+                            ).toFixed(2),
+                        }
+                        setData(newProductData)
                         onChange({
-                            ...productData,
+                            id: productData.id,
                             model: selectedProduct.model,
                             power: selectedProduct.power,
-                            unitPrice: selectedProduct.unitPrice,
+                            quantity: parseFloat(data.quantity || '0'),
+                            unitPrice: parseFloat(
+                                extractNumbers(selectedProduct.price || '0')
+                            ),
+                            totalPrice: parseFloat(newProductData.totalPrice),
                         })
                     }
                 }}
@@ -207,7 +221,11 @@ export default function KitModal({
                     },
                 })
 
-                if (!response.data) throw new Error('Nenhum kit encontrado')
+                if (!response.data)
+                    throw {
+                        message: 'Nenhum kit encontrado',
+                        code: 'NO_SUITABLE_KITS',
+                    }
 
                 const modules = response.data.filter(
                     (item: ProductWithType) => item.type === 'module'
@@ -245,6 +263,33 @@ export default function KitModal({
 
     const handleInverterChange = (inverter: Product) => {
         setKitData((prev) => ({ ...prev, inverter }))
+    }
+
+    const handleSave = () => {
+        const { id, modules, inverter } = kitData
+
+        if (
+            !id ||
+            !modules.id ||
+            !modules.model ||
+            !modules.power ||
+            !modules.unitPrice ||
+            !modules.totalPrice ||
+            !inverter.id ||
+            !inverter.model ||
+            !inverter.power ||
+            !inverter.unitPrice ||
+            !inverter.totalPrice
+        ) {
+            showAlert({
+                message: 'Por favor, preencha todos os campos obrigatórios.',
+                type: 'error',
+            })
+            return
+        }
+
+        setKit(kitData)
+        handleClose()
     }
 
     return (
@@ -295,10 +340,7 @@ export default function KitModal({
                 <Button
                     disabled={loading}
                     variant='contained'
-                    onClick={() => {
-                        setKit(kitData)
-                        handleClose()
-                    }}
+                    onClick={handleSave}
                 >
                     Salvar
                 </Button>

@@ -10,7 +10,7 @@ import {
     Typography,
 } from '@mui/material'
 import axios from 'axios'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AlertContext } from '../../../../../../contexts/AlertContext'
 import { BudgetContext } from '../../../../../../contexts/BudgetContext'
 import { baseURL } from '../../../../../../globals'
@@ -51,48 +51,98 @@ export default function EnergyBillForm({
         'DEZ',
     ]
 
+    useEffect(() => {
+        if (energyBillToEdit) {
+            setEnergyBill(energyBillToEdit)
+            // Carregar URLs de imagens se existir
+            if (energyBillToEdit.photoEnergyBill) {
+                setBillImage(null) // Resetting the File type
+            }
+            if (energyBillToEdit.photoConsumptionGraph) {
+                setChartImage(null) // Resetting the File type
+            }
+        }
+    }, [energyBillToEdit])
+
     const handleAddEnergyBill = async () => {
-        if (!billImage || !chartImage) {
+        if (!billImage && !energyBill.photoEnergyBill) {
             showAlert({
-                message: 'Por favor, adicione todas as imagens necessárias.',
+                message: 'Por favor, adicione a imagem da conta de energia.',
                 type: 'error',
             })
             return
         }
+
+        if (!chartImage && !energyBill.photoConsumptionGraph) {
+            showAlert({
+                message: 'Por favor, adicione a imagem do gráfico de consumo.',
+                type: 'error',
+            })
+            return
+        }
+
         setLoading(true)
 
         try {
-            const formData1 = new FormData()
-            formData1.append('file', billImage)
-            formData1.append('destinationPath', 'energyBills')
+            let photoEnergyBillUrl = energyBill.photoEnergyBill
+            let photoConsumptionGraphUrl = energyBill.photoConsumptionGraph
 
-            const formData2 = new FormData()
-            formData2.append('file', chartImage)
-            formData2.append('destinationPath', 'energyBills')
-
-            const [response1, response2] = await Promise.all([
-                axios.post(`${baseURL}/files`, formData1),
-                axios.post(`${baseURL}/files`, formData2),
-            ])
-
-            const newEnergyBill = {
-                ...energyBill,
-                billImageUrl: response1.data.url,
-                chartImageUrl: response2.data.url,
+            if (billImage) {
+                const formData1 = new FormData()
+                formData1.append('file', billImage)
+                formData1.append('destinationPath', 'energyBills')
+                const response1 = await axios.post(
+                    `${baseURL}/files`,
+                    formData1
+                )
+                photoEnergyBillUrl = response1.data.url
             }
 
-            setBudget({
-                ...budget,
-                consumption: {
-                    ...budget.consumption,
-                    energyBills: [
-                        ...(budget.consumption?.energyBills || []),
-                        newEnergyBill,
-                    ],
-                },
-            })
+            if (chartImage) {
+                const formData2 = new FormData()
+                formData2.append('file', chartImage)
+                formData2.append('destinationPath', 'energyBills')
+                const response2 = await axios.post(
+                    `${baseURL}/files`,
+                    formData2
+                )
+                photoConsumptionGraphUrl = response2.data.url
+            }
+
+            const newEnergyBill: EnergyBill = {
+                ...energyBill,
+                photoEnergyBill: photoEnergyBillUrl,
+                photoConsumptionGraph: photoConsumptionGraphUrl,
+            }
+
+            if (energyBillToEdit) {
+                setBudget({
+                    ...budget,
+                    consumption: {
+                        ...budget.consumption,
+                        energyBills: budget.consumption.energyBills.map(
+                            (bill) =>
+                                bill.id === newEnergyBill.id
+                                    ? newEnergyBill
+                                    : bill
+                        ),
+                    },
+                })
+            } else {
+                setBudget({
+                    ...budget,
+                    consumption: {
+                        ...budget.consumption,
+                        energyBills: [
+                            ...(budget.consumption?.energyBills || []),
+                            newEnergyBill,
+                        ],
+                    },
+                })
+            }
 
             onClose(newEnergyBill)
+            setEnergyBill({} as EnergyBill)
         } catch (error) {
             console.log(error)
             const err: any = error
@@ -175,6 +225,17 @@ export default function EnergyBillForm({
                                     onFilesChanged={(files) =>
                                         setBillImage(files[0])
                                     }
+                                    initialFiles={
+                                        energyBillToEdit?.photoEnergyBill &&
+                                        !billImage
+                                            ? [
+                                                  {
+                                                      name: 'photoEnergyBill',
+                                                      url: energyBillToEdit.photoEnergyBill,
+                                                  },
+                                              ]
+                                            : []
+                                    }
                                     sx={{ height: '150px', overflow: 'hidden' }}
                                 />
                             </Grid>
@@ -191,6 +252,17 @@ export default function EnergyBillForm({
                                     maxQuantity={1}
                                     onFilesChanged={(files) =>
                                         setChartImage(files[0])
+                                    }
+                                    initialFiles={
+                                        energyBillToEdit?.photoConsumptionGraph &&
+                                        !chartImage
+                                            ? [
+                                                  {
+                                                      name: 'photoConsumptionGraph',
+                                                      url: energyBillToEdit.photoConsumptionGraph,
+                                                  },
+                                              ]
+                                            : []
                                     }
                                     sx={{ height: '150px', overflow: 'hidden' }}
                                 />
@@ -213,7 +285,13 @@ export default function EnergyBillForm({
                         variant='contained'
                         disabled={loading}
                     >
-                        {loading ? <CircularProgress size={24} /> : 'Adicionar'}
+                        {loading ? (
+                            <CircularProgress size={24} />
+                        ) : energyBillToEdit ? (
+                            'Editar'
+                        ) : (
+                            'Adicionar'
+                        )}
                     </Button>
                 </DialogActions>
             </Dialog>

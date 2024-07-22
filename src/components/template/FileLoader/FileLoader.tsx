@@ -1,33 +1,42 @@
 import { CloudUploadRounded } from '@mui/icons-material'
 import { Box, Typography } from '@mui/material'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type FileLoaderProps = {
     acceptedTypes: string[]
     maxQuantity: number
     sx?: object
     onFilesChanged: (files: File[]) => void
+    initialFiles?: { name: string; url: string }[]
 }
 
-type SelectedFile = File
+type SelectedFile = File | { name: string; url: string }
 
 export default function FileLoader({
     acceptedTypes,
     maxQuantity,
     sx,
     onFilesChanged,
+    initialFiles = [],
 }: FileLoaderProps) {
-    const [selectedFile, setSelectedFile] = useState<SelectedFile | null>(null)
+    const [selectedFiles, setSelectedFiles] =
+        useState<SelectedFile[]>(initialFiles)
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0] || null
-        setSelectedFile(file)
-        if (file) {
-            onFilesChanged([file])
-        } else {
-            onFilesChanged([])
+    useEffect(() => {
+        if (initialFiles.length > 0) {
+            setSelectedFiles(initialFiles)
         }
+    }, [initialFiles])
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || [])
+        setSelectedFiles(files)
+        onFilesChanged(files)
+    }
+
+    const handleClick = () => {
+        inputRef.current?.click()
     }
 
     return (
@@ -55,8 +64,12 @@ export default function FileLoader({
                     lineHeight: 1.5,
                 }}
             >
-                {selectedFile
-                    ? selectedFile.name
+                {selectedFiles.length > 0
+                    ? selectedFiles
+                          .map((file) =>
+                              file instanceof File ? file.name : file.url
+                          )
+                          .join(', ')
                     : 'Nenhum arquivo selecionado'}
             </Typography>
             <input
@@ -67,7 +80,7 @@ export default function FileLoader({
                 onChange={handleFileChange}
                 multiple={maxQuantity > 1}
             />
-            {selectedFile ? (
+            {selectedFiles.length > 0 ? (
                 <Box
                     sx={{
                         width: '100%',
@@ -77,21 +90,38 @@ export default function FileLoader({
                         alignItems: 'center',
                     }}
                 >
-                    <img
-                        src={URL.createObjectURL(selectedFile)}
-                        alt='Imagem'
-                        style={{
-                            maxWidth: '100%',
-                            maxHeight: '100%',
-                            objectFit: 'contain',
-                        }}
-                        onClick={() => inputRef.current?.click()}
-                    />
+                    {selectedFiles.map((file) =>
+                        file instanceof File ? (
+                            <img
+                                key={file.name}
+                                src={URL.createObjectURL(file)}
+                                alt='Imagem'
+                                style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
+                                    objectFit: 'contain',
+                                }}
+                                onClick={handleClick}
+                            />
+                        ) : (
+                            <img
+                                key={file.name}
+                                src={file.url}
+                                alt='Imagem'
+                                style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
+                                    objectFit: 'contain',
+                                }}
+                                onClick={handleClick}
+                            />
+                        )
+                    )}
                 </Box>
             ) : (
                 <Box
                     className='border rounded p-2 px-3 d-flex flex-column align-items-center justify-content-center'
-                    onClick={() => inputRef.current?.click()}
+                    onClick={handleClick}
                     sx={{
                         cursor: 'pointer',
                         width: '100%',

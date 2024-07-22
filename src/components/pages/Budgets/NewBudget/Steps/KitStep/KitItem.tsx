@@ -44,9 +44,11 @@ function KitProduct({ product }: { product: Product }) {
 export default function KitItem({
     kit,
     setKit,
+    viewOnly,
 }: {
     kit: Kit
     setKit: (id: string, kit: Kit) => void
+    viewOnly?: boolean
 }) {
     const [open, setOpen] = useState<boolean>(false)
     const { budget, setBudget } = useContext(BudgetContext)
@@ -56,12 +58,20 @@ export default function KitItem({
         setBudget({ ...budget, kit })
     }
 
+    const handleSaveKit = (updatedKit: Kit) => {
+        setKit(updatedKit.id, updatedKit)
+        if (budget.kit?.id === updatedKit.id) {
+            setBudget({ ...budget, kit: updatedKit })
+        }
+    }
+
     return (
         <React.Fragment>
             <Paper
                 className={`mb-3 p-3  ${
                     budget.kit?.id === kit.id
-                        ? 'border border-2 border-dark-subtle shadow'
+                        ? !viewOnly &&
+                          'border border-2 border-dark-subtle shadow'
                         : 'shadow-sm'
                 }`}
                 sx={{
@@ -75,8 +85,8 @@ export default function KitItem({
                     <Grid
                         item
                         xs={12}
-                        md={9}
-                        lg={10}
+                        md={viewOnly ? 12 : 9}
+                        lg={viewOnly ? 12 : 10}
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -98,33 +108,37 @@ export default function KitItem({
                             </Typography>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} md={3} lg={2}>
-                        <Button
-                            variant='contained'
-                            startIcon={<DoneRounded />}
-                            fullWidth
-                            className='mb-2'
-                            onClick={handleSelectKit}
-                        >
-                            Selecionar
-                        </Button>
-                        <Button
-                            variant='contained'
-                            startIcon={<EditRounded />}
-                            fullWidth
-                            onClick={() => setOpen(true)}
-                        >
-                            Editar
-                        </Button>
-                    </Grid>
+                    {!viewOnly && (
+                        <Grid item xs={12} md={3} lg={2}>
+                            <Button
+                                variant='contained'
+                                startIcon={<DoneRounded />}
+                                fullWidth
+                                className='mb-2'
+                                onClick={handleSelectKit}
+                            >
+                                Selecionar
+                            </Button>
+                            <Button
+                                variant='contained'
+                                startIcon={<EditRounded />}
+                                fullWidth
+                                onClick={() => setOpen(true)}
+                            >
+                                Editar
+                            </Button>
+                        </Grid>
+                    )}
                 </Grid>
             </Paper>
-            <KitModal
-                kit={kit}
-                setKit={(kit) => setKit(kit.id, kit)}
-                open={open}
-                onClose={() => setOpen(false)}
-            />
+            {!viewOnly && (
+                <KitModal
+                    kit={kit}
+                    setKit={handleSaveKit}
+                    open={open}
+                    onClose={() => setOpen(false)}
+                />
+            )}
         </React.Fragment>
     )
 }

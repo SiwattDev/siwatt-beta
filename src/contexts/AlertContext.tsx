@@ -4,7 +4,7 @@ import { toast, ToastContainer } from 'react-toastify'
 
 type Alert = {
     message: string
-    type: string
+    type: 'success' | 'warning' | 'info' | 'error'
 }
 
 type AlertContext = {
@@ -20,7 +20,7 @@ const truncateMessage = (message: string, limit: number): string => {
 const AlertProvider = ({ children }: { children: ReactNode }) => {
     const theme = useTheme()
     const showAlert = ({ message, type }: Alert) => {
-        const truncatedMessage = truncateMessage(message, 50)
+        const truncatedMessage = truncateMessage(message, 60)
 
         switch (type) {
             case 'success':

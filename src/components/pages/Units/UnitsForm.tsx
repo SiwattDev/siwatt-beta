@@ -103,9 +103,11 @@ export default function UnitsForm({
     const saveUnit = async () => {
         try {
             setSaving(true)
-            if (!unit.name) throw new Error('Nome é obrigatório')
-            if (!unit.cnpj) throw new Error('CNPJ é obrigatório')
-            if (!isCNPJ(unit.cnpj)) throw new Error('CNPJ inválido')
+            if (!unit.name)
+                throw { message: 'Nome é obrigatório', code: 'MISSING_PARAMS' }
+            if (!unit.cnpj)
+                throw { message: 'CNPJ é obrigatório', code: 'MISSING_PARAMS' }
+            if (!isCNPJ(unit.cnpj)) throw { message: 'CNPJ inválido' }
 
             const response = unitId
                 ? await axios.put(`${baseURL}/doc?user=${user.id}`, {
@@ -118,7 +120,7 @@ export default function UnitsForm({
                       data: unit,
                   })
 
-            if (!response.data) throw new Error('Erro ao salvar filial')
+            if (!response.data) throw { message: 'Erro ao salvar filial' }
 
             showAlert({
                 message: 'Filial salva com sucesso',

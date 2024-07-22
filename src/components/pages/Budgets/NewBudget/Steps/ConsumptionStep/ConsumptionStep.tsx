@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material'
+import ReferenceHelper from '../../ReferenceHelper/ReferenceHelper'
 import EnergyBillTable from './EnergyBillTable'
-import ReferenceHelper from './ReferenceHelper'
 import Selects from './Selects'
 
 export default function ConsumptionStep() {

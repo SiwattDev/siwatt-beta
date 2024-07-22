@@ -176,7 +176,8 @@ export default () => {
             DEZ: 0,
         }
 
-        if (consumption.energyBills.length === 0) return 0
+        if (!consumption?.energyBills || consumption.energyBills.length === 0)
+            return 0
 
         consumption.energyBills.forEach((bill) => {
             Object.entries(bill.months).forEach(([month, value]) => {
@@ -206,6 +207,8 @@ export default () => {
             'three-phase': 100,
         }
 
+        if (!averageConsumption || !networkType || !solarIrradiation) return 0
+
         const networkTypeValue = networkTypeValues[networkType]
         const average = solarIrradiation
         const result =
@@ -215,14 +218,49 @@ export default () => {
     }
 
     const getSolarIrradiation = async (): Promise<SolarIrradiation> => {
+        if (!budget?.solarPlantSite?.city) return []
+
         const response = await axios.get(`${baseURL}/solar-irradiation`, {
             params: { cityName: budget.solarPlantSite.city },
         })
 
         if (response.status !== 200)
-            throw new Error('Erro ao buscar irradiação solar')
+            throw { message: 'Erro ao buscar irradiação solar' }
 
         return response.data.solarIrradiation
+    }
+
+    const calculatePlantPrice = (kitPrice: number): number => {
+        const taxPercentages = [
+            0.1, 0.1, 0.05, 0.05, 0.05, 0.01, 0.1, 0.08, 0.01,
+        ]
+        const fixedTax = 250
+        const percentage = 0.2
+        const rate1 = 0.067
+        const rate2 = 0.155
+        const finalRate = 0.0219
+
+        const totalTax = taxPercentages.reduce(
+            (acc, tax) => acc + tax * kitPrice,
+            fixedTax
+        )
+        const baseValueWithTax = kitPrice + totalTax
+        const additionalCost1 = baseValueWithTax * percentage
+        const additionalCost2 = baseValueWithTax * percentage
+        const additionalCost3 =
+            rate1 * (baseValueWithTax + additionalCost1 + additionalCost2)
+        const additionalCost4 = rate2 * additionalCost2
+
+        const totalCost =
+            kitPrice +
+            totalTax +
+            additionalCost1 +
+            additionalCost2 +
+            additionalCost3 +
+            additionalCost4
+        const finalValue = totalCost + finalRate * totalCost
+
+        return finalValue
     }
 
     return {
@@ -233,5 +271,6 @@ export default () => {
         calculateAverageEnergyBill,
         getNeededPower,
         getSolarIrradiation,
+        calculatePlantPrice,
     }
 }
