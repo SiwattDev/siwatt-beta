@@ -176,7 +176,7 @@ export default () => {
             DEZ: 0,
         }
 
-        if (!consumption?.energyBills || consumption.energyBills.length === 0)
+        if (!consumption?.energyBills || consumption?.energyBills?.length === 0)
             return 0
 
         consumption.energyBills.forEach((bill) => {
