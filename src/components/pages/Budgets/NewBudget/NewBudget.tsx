@@ -21,7 +21,13 @@ import { BudgetContext } from '../../../../contexts/BudgetContext'
 import { Budget } from '../../../../types/BudgetTypes'
 import PageHeader from '../../../template/PageHeader/PageHeader'
 // Step Components
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 import { AlertContext } from '../../../../contexts/AlertContext'
+import { UserContext } from '../../../../contexts/UserContext'
+import { baseURL } from '../../../../globals'
+import useUtils from '../../../../hooks/useUtils'
+import Loading from '../../../template/Loading/Loading'
 import ClientStep from './Steps/ClientStep/ClientStep'
 import ConsumptionStep from './Steps/ConsumptionStep/ConsumptionStep'
 import KitStep from './Steps/KitStep/KitStep'
@@ -81,12 +87,48 @@ export default function NewBudget() {
     const { showAlert } = useContext(AlertContext)
     const theme = useTheme()
     const [activeStep, setActiveStep] = useState(0)
+    const [saving, setSaving] = useState(false)
     const { budget } = useContext(BudgetContext)
+    const { backendErros } = useUtils()
+    const navigate = useNavigate()
+    const { user } = useContext(UserContext)
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (validateStep(activeStep, budget)) {
             if (activeStep === steps.length - 1) {
-                console.log('Finalizar ação específica')
+                setSaving(true)
+                try {
+                    const response = await axios.post(
+                        `${baseURL}/doc?user=${user.id}`,
+                        {
+                            path: 'budgets',
+                            data: budget,
+                        }
+                    )
+
+                    if (!response.data)
+                        throw {
+                            message: 'Erro ao salvar orçamento',
+                            code: 'UNKNOWN_ERROR',
+                        }
+
+                    console.log(response.data)
+                    navigate(`/dashboard/budgets/${response.data.id}`)
+                    setSaving(false)
+                    showAlert({
+                        message: 'Orçamento salvo com sucesso!',
+                        type: 'success',
+                    })
+                } catch (error) {
+                    setSaving(false)
+                    console.log(error)
+                    const err: any = error
+                    const code =
+                        err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+                    const message =
+                        backendErros(code) || err.message || 'Erro inesperado'
+                    showAlert({ message, type: 'error' })
+                }
             } else {
                 setActiveStep((prevActiveStep) => prevActiveStep + 1)
             }
@@ -101,6 +143,8 @@ export default function NewBudget() {
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1)
     }
+
+    if (saving) return <Loading message='Salvando orçamento...' />
 
     return (
         <React.Fragment>

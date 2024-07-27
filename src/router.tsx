@@ -1,5 +1,6 @@
 import { Navigate, Route, HashRouter as Router, Routes } from 'react-router-dom'
 import Budgets from './components/pages/Budgets/Budgets'
+import BudgetDetails from './components/pages/Budgets/NewBudget/BudgetDetails/BudgetDetails'
 import NewBudget from './components/pages/Budgets/NewBudget/NewBudget'
 import Dashboard from './components/pages/Dashboard'
 import Funnel from './components/pages/Funnel/Funnel'
@@ -32,6 +33,10 @@ function AppRouter() {
                 {
                     path: 'budgets/new',
                     element: <NewBudget />,
+                },
+                {
+                    path: 'budgets/:id',
+                    element: <BudgetDetails />,
                 },
                 {
                     path: 'units',

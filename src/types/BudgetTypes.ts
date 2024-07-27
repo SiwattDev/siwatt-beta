@@ -52,4 +52,42 @@ type Budget = {
     status: string
 }
 
-export type { Budget, Consumption, EnergyBill, Kit, Product }
+type BudgetWithClientData = Budget & { client: Client; seller: Seller }
+
+type BudgetResult = {
+    cityName: string
+    latitude: number
+    longitude: number
+    idealInclination: number
+    correctionFactor: number
+    peakGeneration: number
+    solarIrradiationData: number[]
+    averageSolarIrradiation: number
+    energyGeneration: number[]
+    averageEnergyGeneration: number
+    averageConsumption: number
+    panelQuantity: number
+    areaNeeded: number
+    neededPower: number
+    plantValue: number
+    creditCardInstallments: number[]
+    bankFinancingInstallments: number[]
+    investmentReturnPayback: {
+        monthlySavings: number
+        returnIn25Years: number[]
+        paybackInYears: number
+        remainingMonths: number
+    }
+    tariffReadjustment: number[]
+    investmentReturn: number[]
+}
+
+export type {
+    Budget,
+    BudgetResult,
+    BudgetWithClientData,
+    Consumption,
+    EnergyBill,
+    Kit,
+    Product,
+}

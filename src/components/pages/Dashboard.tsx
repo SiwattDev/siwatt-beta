@@ -57,7 +57,7 @@ export default function Dashboard() {
                     setLoading(false)
                     showAlert({
                         message: 'Entrou como ' + userData.data.name,
-                        type: 'success',
+                        type: 'info',
                     })
                 } catch (error) {
                     console.log(error)

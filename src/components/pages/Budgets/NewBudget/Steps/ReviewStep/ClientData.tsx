@@ -71,7 +71,7 @@ export default function ClientData() {
         }
 
         getClientData()
-    }, [budget.client, user.id, backendErros, showAlert])
+    }, [budget.client])
 
     if (loading) return <Loading message='Carregando dados...' />
 
