@@ -12,7 +12,13 @@ export default function LoadingButton({
 }: LoadingButtonProps) {
     return (
         <Button {...props} disabled={loading}>
-            {loading && <CircularProgress size={24} />}
+            {loading && (
+                <CircularProgress
+                    size={20}
+                    color={'inherit'}
+                    className='me-2'
+                />
+            )}
             {children}
         </Button>
     )

@@ -26,6 +26,8 @@ export default function ClientStep() {
             setSelectedClient(budget.client)
         } else if (typeof budget.client === 'object') {
             setSelectedClient(budget.client.id)
+        } else {
+            setSelectedClient('')
         }
     }, [budget.client])
 
@@ -41,7 +43,7 @@ export default function ClientStep() {
         }
 
         getClients()
-    }, [])
+    }, [user.id])
 
     const handleChange = (event: SelectChangeEvent<string>) => {
         setSelectedClient(event.target.value as string)
@@ -72,7 +74,7 @@ export default function ClientStep() {
                                 onChange={handleChange}
                                 label='Selecione um cliente'
                             >
-                                <MenuItem value=''>
+                                <MenuItem value={''}>
                                     <em>Selecione um cliente</em>
                                 </MenuItem>
                                 {clients.map((client) => (

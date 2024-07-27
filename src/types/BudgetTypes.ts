@@ -50,6 +50,7 @@ type Budget = {
     peakGeneration: number
     seller: Seller | string
     status: string
+    draft?: boolean
 }
 
 type BudgetWithClientData = Budget & { client: Client; seller: Seller }

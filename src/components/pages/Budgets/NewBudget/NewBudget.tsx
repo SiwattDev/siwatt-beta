@@ -1,6 +1,7 @@
 import {
     ArrowBackRounded,
     ArrowForward,
+    CloseRounded,
     DescriptionRounded,
     DoneRounded,
 } from '@mui/icons-material'
@@ -9,6 +10,7 @@ import {
     Button,
     Card,
     CardContent,
+    IconButton,
     Paper,
     Step,
     StepLabel,
@@ -16,18 +18,17 @@ import {
     Typography,
     useTheme,
 } from '@mui/material'
-import React, { useContext, useState } from 'react'
-import { BudgetContext } from '../../../../contexts/BudgetContext'
-import { Budget } from '../../../../types/BudgetTypes'
-import PageHeader from '../../../template/PageHeader/PageHeader'
-// Step Components
 import axios from 'axios'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlertContext } from '../../../../contexts/AlertContext'
+import { BudgetContext } from '../../../../contexts/BudgetContext'
 import { UserContext } from '../../../../contexts/UserContext'
 import { baseURL } from '../../../../globals'
 import useUtils from '../../../../hooks/useUtils'
+import { Budget } from '../../../../types/BudgetTypes'
 import Loading from '../../../template/Loading/Loading'
+import PageHeader from '../../../template/PageHeader/PageHeader'
 import ClientStep from './Steps/ClientStep/ClientStep'
 import ConsumptionStep from './Steps/ConsumptionStep/ConsumptionStep'
 import KitStep from './Steps/KitStep/KitStep'
@@ -88,10 +89,11 @@ export default function NewBudget() {
     const theme = useTheme()
     const [activeStep, setActiveStep] = useState(0)
     const [saving, setSaving] = useState(false)
-    const { budget } = useContext(BudgetContext)
+    const { budget, setBudget } = useContext(BudgetContext)
     const { backendErros } = useUtils()
     const navigate = useNavigate()
     const { user } = useContext(UserContext)
+    const draftAlertShown = useRef(false)
 
     const handleNext = async () => {
         if (validateStep(activeStep, budget)) {
@@ -108,7 +110,7 @@ export default function NewBudget() {
 
                     if (!response.data)
                         throw {
-                            message: 'Erro ao salvar orçamento',
+                            message: 'Erro ao salvar orçamento',
                             code: 'UNKNOWN_ERROR',
                         }
 
@@ -116,7 +118,7 @@ export default function NewBudget() {
                     navigate(`/dashboard/budgets/${response.data.id}`)
                     setSaving(false)
                     showAlert({
-                        message: 'Orçamento salvo com sucesso!',
+                        message: 'Orçamento salvo com sucesso!',
                         type: 'success',
                     })
                 } catch (error) {
@@ -144,13 +146,23 @@ export default function NewBudget() {
         setActiveStep((prevActiveStep) => prevActiveStep - 1)
     }
 
-    if (saving) return <Loading message='Salvando orçamento...' />
+    useEffect(() => {
+        if (budget.draft && !draftAlertShown.current) {
+            showAlert({
+                message: 'Você está editando um rascunho',
+                type: 'info',
+            })
+            draftAlertShown.current = true
+        }
+    }, [budget.draft, showAlert])
+
+    if (saving) return <Loading message='Salvando orçamento...' />
 
     return (
         <React.Fragment>
             <PageHeader
                 icon={<DescriptionRounded />}
-                title='Novo Orçamento'
+                title='Novo Orçamento'
                 path={['dashboard', 'budgets', 'new']}
             />
 
@@ -203,12 +215,45 @@ export default function NewBudget() {
                             )}
                         </Button>
                     </Box>
-                    <Typography
-                        variant='caption'
-                        color={theme.palette.text.secondary}
-                    >
-                        Campos obrigatórios (*)
-                    </Typography>
+                    <Box className='text-center'>
+                        {budget.draft && (
+                            <Typography
+                                variant='caption'
+                                color={theme.palette.success.main}
+                                className='d-flex align-items-center gap-2'
+                                onClick={() => {
+                                    localStorage.removeItem('budget')
+                                    setBudget({} as Budget)
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        width: '5px',
+                                        height: '5px',
+                                        background: theme.palette.success.main,
+                                        boxShadow: `0px 0px 5px ${theme.palette.success.main}`,
+                                        borderRadius: '50%',
+                                    }}
+                                ></Box>
+                                Você está editando um rascunho
+                                <IconButton
+                                    onClick={() => {
+                                        localStorage.removeItem('budget')
+                                        setBudget({} as Budget)
+                                    }}
+                                    className='p-1'
+                                >
+                                    <CloseRounded sx={{ fontSize: '12px' }} />
+                                </IconButton>
+                            </Typography>
+                        )}
+                        <Typography
+                            variant='caption'
+                            color={theme.palette.text.secondary}
+                        >
+                            Campos obrigatórios (*)
+                        </Typography>
+                    </Box>
                 </CardContent>
             </Card>
         </React.Fragment>
