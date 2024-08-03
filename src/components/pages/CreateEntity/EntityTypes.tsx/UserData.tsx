@@ -65,11 +65,11 @@ export default function UserData({ onSave }: { onSave: (v: User) => void }) {
             !user.email ||
             !user.phone ||
             !user.password ||
-            (!user.cnpj && !user.cpf) ||
             !user.type ||
             !user.unit ||
             !user.address.cep
         ) {
+            console.log(user)
             showAlert({
                 message:
                     'Por favor, preencha todos os campos obrigatórios. (*)',

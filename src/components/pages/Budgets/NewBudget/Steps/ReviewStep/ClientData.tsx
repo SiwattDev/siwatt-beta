@@ -90,7 +90,10 @@ export default function ClientData() {
                         <strong>CEP:</strong> {client?.address?.cep}
                     </Typography>
                     <Typography>
-                        <strong>Vendedor:</strong> {client?.seller?.name}
+                        <strong>Vendedor:</strong>{' '}
+                        {typeof client?.seller === 'string'
+                            ? 'Nenhum'
+                            : client?.seller?.name}
                     </Typography>
                 </CardContent>
             </Card>

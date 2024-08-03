@@ -58,6 +58,36 @@ export default function CreateEntity() {
         }
     }
 
+    const createUser = async (userData: User) => {
+        try {
+            const response = await axios.post(
+                `${baseURL}/users?user=${user.id}`,
+                {
+                    path: 'users',
+                    data: userData,
+                }
+            )
+            if (!response)
+                throw {
+                    message: 'Erro ao criar usuário',
+                    code: 'UNKNOWN_ERROR',
+                }
+
+            showAlert({
+                message: 'Usuário criado com sucesso',
+                type: 'success',
+            })
+        } catch (error) {
+            console.log(error)
+            const err: any = error
+            const code =
+                err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+            const message =
+                backendErros(code) || err.message || 'Erro inesperado'
+            showAlert({ message, type: 'error' })
+        }
+    }
+
     return (
         <React.Fragment>
             <PageHeader
@@ -104,11 +134,7 @@ export default function CreateEntity() {
                         />
                     </RadioGroup>
                     {typeEntity === 'user' && (
-                        <UserData
-                            onSave={(user: User) =>
-                                saveEntity(typeEntity, user)
-                            }
-                        />
+                        <UserData onSave={(user: User) => createUser(user)} />
                     )}
                     {typeEntity === 'client' && (
                         <ClientData
