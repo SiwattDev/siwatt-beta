@@ -20,7 +20,7 @@ import {
 } from '@mui/material'
 import axios from 'axios'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AlertContext } from '../../../../contexts/AlertContext'
 import { BudgetContext } from '../../../../contexts/BudgetContext'
 import { UserContext } from '../../../../contexts/UserContext'
@@ -61,7 +61,7 @@ const validateStep = (step: number, budget: Budget) => {
         case 1:
             return (
                 budget.consumption &&
-                budget.consumption?.energyBills?.length &&
+                budget.consumption.energyBills.length &&
                 budget.consumption.roofType &&
                 budget.consumption.networkType
             )
@@ -94,39 +94,67 @@ export default function NewBudget() {
     const navigate = useNavigate()
     const { user } = useContext(UserContext)
     const draftAlertShown = useRef(false)
+    const { id } = useParams()
+
+    useEffect(() => {
+        if (id) {
+            axios
+                .get(`${baseURL}/doc?path=budgets&id=${id}`)
+                .then((response) => setBudget(response.data))
+                .catch((error) => {
+                    console.error(error)
+                    showAlert({
+                        message: 'Erro ao carregar orçamento para edição',
+                        type: 'error',
+                    })
+                })
+        }
+    }, [id, setBudget, showAlert])
 
     const handleNext = async () => {
         if (validateStep(activeStep, budget)) {
             if (activeStep === steps.length - 1) {
                 setSaving(true)
                 try {
-                    const response = await axios.post(
-                        `${baseURL}/doc?user=${user.id}`,
-                        {
-                            path: 'budgets',
-                            data: budget,
-                        }
-                    )
+                    let response
+                    if (budget.editing) {
+                        response = await axios.put(
+                            `${baseURL}/doc?user=${user.id}`,
+                            {
+                                path: 'budgets',
+                                data: budget,
+                                id: budget.id,
+                            }
+                        )
+                    } else {
+                        response = await axios.post(
+                            `${baseURL}/doc?user=${user.id}`,
+                            {
+                                path: 'budgets',
+                                data: budget,
+                                id: budget.id || null,
+                            }
+                        )
+                    }
 
                     if (!response.data)
                         throw {
-                            message: 'Erro ao salvar orçamento',
+                            message: `Erro ao ${budget.editing ? 'atualizar' : 'criar'} orçamento`,
                             code: 'UNKNOWN_ERROR',
                         }
 
-                    console.log(response.data)
                     navigate(`/dashboard/budgets/${response.data.id}`)
                     setSaving(false)
                     showAlert({
-                        message: 'Orçamento salvo com sucesso!',
+                        message: `Orçamento ${budget.editing ? 'atualizado' : 'criado'} com sucesso!`,
                         type: 'success',
                     })
                 } catch (error) {
                     setSaving(false)
-                    console.log(error)
+                    console.error(error)
                     const err: any = error
                     const code =
-                        err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+                        err.response?.data?.code || err.code || 'UNKNOWN_ERROR'
                     const message =
                         backendErros(code) || err.message || 'Erro inesperado'
                     showAlert({ message, type: 'error' })
@@ -162,8 +190,8 @@ export default function NewBudget() {
         <React.Fragment>
             <PageHeader
                 icon={<DescriptionRounded />}
-                title='Novo Orçamento'
-                path={['dashboard', 'budgets', 'new']}
+                title={budget.editing ? 'Editar Orçamento' : 'Novo Orçamento'}
+                path={['dashboard', 'budgets', budget.editing ? 'edit' : 'new']}
             />
 
             <Paper sx={{ p: 2 }}>
@@ -224,6 +252,7 @@ export default function NewBudget() {
                                 onClick={() => {
                                     localStorage.removeItem('budget')
                                     setBudget({} as Budget)
+                                    setActiveStep(0)
                                 }}
                             >
                                 <Box
@@ -240,6 +269,7 @@ export default function NewBudget() {
                                     onClick={() => {
                                         localStorage.removeItem('budget')
                                         setBudget({} as Budget)
+                                        setActiveStep(0)
                                     }}
                                     className='p-1'
                                 >

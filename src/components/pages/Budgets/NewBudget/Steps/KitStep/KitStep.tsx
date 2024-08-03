@@ -22,6 +22,7 @@ export default function KitStep() {
 
     useEffect(() => {
         const getKits = async () => {
+            setLoading(true)
             try {
                 const response = await axios.get(`${baseURL}/generate-kits`, {
                     params: {
@@ -85,7 +86,7 @@ export default function KitStep() {
         }
 
         getKits()
-    }, [user.id, budget, backendErros, showAlert])
+    }, [user.id])
 
     const setKit = (id: string, kit: Kit) => {
         setSuggestedKits((prevKits) =>

@@ -56,15 +56,36 @@ export default function EnergyBillForm({
             setEnergyBill(energyBillToEdit)
             // Carregar URLs de imagens se existir
             if (energyBillToEdit.photoEnergyBill) {
-                setBillImage(null) // Resetting the File type
+                setBillImage(null) // Resetando o tipo File
             }
             if (energyBillToEdit.photoConsumptionGraph) {
-                setChartImage(null) // Resetting the File type
+                setChartImage(null) // Resetando o tipo File
             }
         }
     }, [energyBillToEdit])
 
     const handleAddEnergyBill = async () => {
+        // Verificar se todos os campos estão preenchidos
+        if (!energyBill.id) {
+            showAlert({
+                message: 'Por favor, preencha o ID da conta de energia.',
+                type: 'error',
+            })
+            return
+        }
+
+        const missingMonths = months.some(
+            (month) =>
+                !energyBill.months || energyBill.months[month] === undefined
+        )
+        if (missingMonths) {
+            showAlert({
+                message: 'Por favor, preencha todos os meses com valores.',
+                type: 'error',
+            })
+            return
+        }
+
         if (!billImage && !energyBill.photoEnergyBill) {
             showAlert({
                 message: 'Por favor, adicione a imagem da conta de energia.',

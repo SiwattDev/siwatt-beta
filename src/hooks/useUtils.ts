@@ -98,6 +98,8 @@ export default () => {
                 return 'Erro ao buscar dados do funil'
             case 'NO_SUITABLE_KITS':
                 return 'Nenhum kit disponível'
+            case 'INVALID_PARAMS':
+                return 'Parâmetros inválidos'
             default:
                 return 'Erro inesperado'
         }

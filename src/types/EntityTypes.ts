@@ -1,16 +1,17 @@
 type Address = {
-    road?: string
+    road?: string // Depreciated
+    street?: string
     number?: number
     city?: string
     uf?: string
-    cep?: number
+    cep?: string
     reference?: string
     neighborhood?: string
 }
 
 type DirectContact = {
     birthday: string
-    cpf: number
+    cpf: string
     email: string
     name: string
     phone: number
@@ -26,7 +27,18 @@ type Entity = {
     address: Address
 }
 
-type User = Entity & Address
+type User = Entity &
+    Address & {
+        user_type: string // Depreciated
+        type:
+            | 'business-intermediator'
+            | 'ceo'
+            | 'commercial-diretor'
+            | 'commercial-manager'
+            | 'sales-manager'
+        password?: string
+        unit: string
+    }
 
 type Seller = Entity & {
     user_type?: string // Depreciated
@@ -34,9 +46,29 @@ type Seller = Entity & {
 }
 
 type Client = Entity & {
-    seller: Seller
+    seller: Seller | string
     direct_contact?: DirectContact // Depreciated
     directContact?: DirectContact
+    stateRegistration?: string
+    fantasyName?: string
 }
 
-export type { Client, Entity, Seller, User }
+type Supplier = Entity & {
+    direct_contact?: DirectContact // Depreciated
+    directContact?: DirectContact
+    stateRegistration?: string
+    fantasyName?: string
+}
+
+type Partner = Entity
+
+export type {
+    Address,
+    Client,
+    DirectContact,
+    Entity,
+    Partner,
+    Seller,
+    Supplier,
+    User,
+}

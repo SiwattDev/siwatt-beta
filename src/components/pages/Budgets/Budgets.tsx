@@ -19,39 +19,41 @@ export default function Budgets() {
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
     const { user } = useContext(UserContext)
+    const getBudgets = async () => {
+        setLoading(true)
+        try {
+            const response = await axios.get(`${baseURL}/docs`, {
+                params: {
+                    user: user.id,
+                    path: 'budgets',
+                },
+            })
+
+            console.log(response.data)
+
+            if (!response.data) {
+                showAlert({
+                    message: 'Erro ao buscar os orçamentos',
+                    type: 'error',
+                })
+                return
+            }
+
+            setBudgets(response.data)
+            setLoading(false)
+        } catch (error) {
+            console.log(error)
+            const err: any = error
+            const code =
+                err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+            const message =
+                backendErros(code) || err.message || 'Erro inesperado'
+            showAlert({ message, type: 'error' })
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
-        const getBudgets = async () => {
-            try {
-                const response = await axios.get(`${baseURL}/docs`, {
-                    params: {
-                        user: user.id,
-                        path: 'budgets',
-                    },
-                })
-
-                if (!response.data) {
-                    showAlert({
-                        message: 'Erro ao buscar os orçamentos',
-                        type: 'error',
-                    })
-                    return
-                }
-
-                setBudgets(response.data)
-                setLoading(false)
-            } catch (error) {
-                console.log(error)
-                const err: any = error
-                const code =
-                    err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
-                const message =
-                    backendErros(code) || err.message || 'Erro inesperado'
-                showAlert({ message, type: 'error' })
-                setLoading(false)
-            }
-        }
-
         getBudgets()
     }, [])
 
@@ -67,7 +69,7 @@ export default function Budgets() {
             <Grid container spacing={2}>
                 {budgets.map((budget: Budget) => (
                     <Grid item xs={12} sm={12} md={6} lg={4} key={budget.id}>
-                        <BudgetItem budget={budget} />
+                        <BudgetItem budget={budget} update={getBudgets} />
                     </Grid>
                 ))}
             </Grid>

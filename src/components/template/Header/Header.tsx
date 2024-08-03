@@ -2,12 +2,14 @@ import {
     AccountCircleRounded,
     DarkModeRounded,
     LightModeRounded,
+    PersonAddRounded,
 } from '@mui/icons-material'
 import {
     Box,
     IconButton,
     Menu,
     MenuItem,
+    Tooltip,
     useMediaQuery,
     useTheme,
 } from '@mui/material'
@@ -68,8 +70,17 @@ export default function Header() {
                 sx={{
                     display: 'flex',
                     flexWrap: 'nowrap',
+                    gap: '10px',
                 }}
             >
+                <Tooltip title='Nova entidade'>
+                    <IconButton
+                        aria-label='Nova entidade'
+                        onClick={() => navigate('/dashboard/create-entity')}
+                    >
+                        <PersonAddRounded />
+                    </IconButton>
+                </Tooltip>
                 <IconButton onClick={toggleTheme} aria-label='Mudar tema'>
                     {darkMode ? <LightModeRounded /> : <DarkModeRounded />}
                 </IconButton>

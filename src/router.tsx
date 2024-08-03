@@ -2,6 +2,7 @@ import { Navigate, Route, HashRouter as Router, Routes } from 'react-router-dom'
 import Budgets from './components/pages/Budgets/Budgets'
 import BudgetDetails from './components/pages/Budgets/NewBudget/BudgetDetails/BudgetDetails'
 import NewBudget from './components/pages/Budgets/NewBudget/NewBudget'
+import CreateEntity from './components/pages/CreateEntity/CreateEntity'
 import Dashboard from './components/pages/Dashboard'
 import Funnel from './components/pages/Funnel/Funnel'
 import Login from './components/pages/Login/Login'
@@ -41,6 +42,10 @@ function AppRouter() {
                 {
                     path: 'units',
                     element: <Units />,
+                },
+                {
+                    path: 'create-entity',
+                    element: <CreateEntity />,
                 },
             ],
         },

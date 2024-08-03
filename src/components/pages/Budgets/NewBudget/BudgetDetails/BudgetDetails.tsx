@@ -3,6 +3,7 @@ import { Box, Card, CardContent, Typography } from '@mui/material'
 import axios from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { AlertContext } from '../../../../../contexts/AlertContext'
 import { UserContext } from '../../../../../contexts/UserContext'
 import { baseURL } from '../../../../../globals'
 import useUtils from '../../../../../hooks/useUtils'
@@ -32,6 +33,8 @@ export default function BudgetDetails() {
     )
     const { calculateAverageEnergyBill } = useUtils()
     const { user } = useContext(UserContext)
+    const { backendErros } = useUtils()
+    const { showAlert } = useContext(AlertContext)
 
     const roofType = {
         metal: 'Metálico',
@@ -44,56 +47,66 @@ export default function BudgetDetails() {
         const getResult = async () => {
             if (!user || !user.id || !id) return
 
-            const budgetData = await axios.get(`${baseURL}/doc`, {
-                params: {
-                    user: user.id,
-                    path: 'budgets',
-                    id,
-                },
-            })
-
-            const clientData = await axios.get(`${baseURL}/doc`, {
-                params: {
-                    user: user.id,
-                    path: 'clients',
-                    id: budgetData.data.client,
-                },
-            })
-
-            const sellerData = await axios.get(`${baseURL}/doc`, {
-                params: {
-                    user: user.id,
-                    path: 'users',
-                    id: clientData.data.seller,
-                },
-            })
-
-            setBudget({
-                ...budgetData.data,
-                client: clientData.data,
-                seller: sellerData.data,
-            })
-
-            const resultData = await axios.get(
-                `${baseURL}/calculate-solar-energy`,
-                {
+            try {
+                const budgetData = await axios.get(`${baseURL}/doc`, {
                     params: {
-                        cityName: budgetData.data.solarPlantSite.city,
-                        averageConsumption: calculateAverageEnergyBill(
-                            budgetData.data.consumption
-                        ),
-                        powerSupplyType:
-                            budgetData.data.consumption.networkType,
-                        panelPower: budgetData.data.kit.modules.power,
-                        kitPrice:
-                            budgetData.data.kit.modules.totalPrice +
-                            budgetData.data.kit.inverter.totalPrice,
+                        user: user.id,
+                        path: 'budgets',
+                        id: id.toString(),
                     },
-                }
-            )
+                })
 
-            setResult(resultData.data)
-            setLoading(false)
+                const clientData = await axios.get(`${baseURL}/doc`, {
+                    params: {
+                        user: user.id,
+                        path: 'clients',
+                        id: budgetData.data.client,
+                    },
+                })
+
+                const sellerData = await axios.get(`${baseURL}/doc`, {
+                    params: {
+                        user: user.id,
+                        path: 'users',
+                        id: clientData.data.seller,
+                    },
+                })
+
+                setBudget({
+                    ...budgetData.data,
+                    client: clientData.data,
+                    seller: sellerData.data,
+                })
+
+                const resultData = await axios.get(
+                    `${baseURL}/calculate-solar-energy`,
+                    {
+                        params: {
+                            cityName: budgetData.data.solarPlantSite.city,
+                            averageConsumption: calculateAverageEnergyBill(
+                                budgetData.data.consumption
+                            ),
+                            powerSupplyType:
+                                budgetData.data.consumption.networkType,
+                            panelPower: budgetData.data.kit.modules.power,
+                            kitPrice:
+                                budgetData.data.kit.modules.totalPrice +
+                                budgetData.data.kit.inverter.totalPrice,
+                        },
+                    }
+                )
+
+                setResult(resultData.data)
+                setLoading(false)
+            } catch (error) {
+                console.log(error)
+                const err: any = error
+                const code =
+                    err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+                const message =
+                    backendErros(code) || err.message || 'Erro inesperado'
+                showAlert({ message, type: 'error' })
+            }
         }
 
         getResult()

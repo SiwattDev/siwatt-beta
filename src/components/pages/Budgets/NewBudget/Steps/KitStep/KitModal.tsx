@@ -282,7 +282,8 @@ export default function KitModal({
             !inverter.totalPrice
         ) {
             showAlert({
-                message: 'Por favor, preencha todos os campos obrigatórios.',
+                message:
+                    'Por favor, preencha todos os campos obrigatórios. (*)',
                 type: 'error',
             })
             return
