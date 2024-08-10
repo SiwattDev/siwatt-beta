@@ -30,7 +30,6 @@ export default function Units() {
                     path: 'units',
                 },
             })
-            console.log(response.data)
             setUnits(response.data)
             setLoading(false)
         } catch (error) {

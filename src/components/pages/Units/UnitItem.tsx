@@ -51,17 +51,12 @@ export default function UnitItem({
             message: 'Tem certeza que deseja excluir esta unidade?',
             onConfirm: async () => {
                 try {
-                    const response = await axios.delete(
-                        `${baseURL}/doc?user=${user.id}`,
-                        {
-                            params: {
-                                path: 'units',
-                                id: id,
-                            },
-                        }
-                    )
-
-                    console.log(response)
+                    await axios.delete(`${baseURL}/doc?user=${user.id}`, {
+                        params: {
+                            path: 'units',
+                            id: id,
+                        },
+                    })
 
                     showAlert({
                         message: 'Unidade excluída',
@@ -78,11 +73,8 @@ export default function UnitItem({
                     showAlert({ message, type: 'error' })
                 }
             },
-            onCancel: () => {
-                console.log('cancelar')
-            },
+            onCancel: () => {},
         })
-        console.log('deletar', id)
     }
 
     return (

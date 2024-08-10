@@ -19,7 +19,6 @@ export default function ValidityStep() {
         if (date) {
             setSelectedDate(date)
             setBudget({ ...budget, validity: date.format('YYYY-MM-DD') })
-            console.log(date.format('YYYY-MM-DD'), budget)
         }
     }
 

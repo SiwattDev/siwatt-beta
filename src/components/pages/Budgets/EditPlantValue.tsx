@@ -28,7 +28,6 @@ export default function EditPlantValue({
             <DialogTitle>Alterar Valor do Orçamento</DialogTitle>
             <DialogContent>
                 <TextField
-                    autoFocus
                     margin='dense'
                     label='Novo Valor'
                     type='number'

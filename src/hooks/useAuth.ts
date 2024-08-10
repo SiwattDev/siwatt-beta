@@ -65,9 +65,6 @@ export default () => {
 
             return { ...loginResponse, token }
         } catch (error: any) {
-            console.log(
-                loginErros.find((loginError) => loginError.code === error.code)
-            )
             error.message = loginErros.find(
                 (loginError) => loginError.code === error.code
             )?.message

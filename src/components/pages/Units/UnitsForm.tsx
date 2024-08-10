@@ -50,7 +50,6 @@ export default function UnitsForm({
                     },
                 })
                 .then((response) => {
-                    console.log(response.data)
                     setUnit(response.data)
                     setLoading(false)
                 })
@@ -152,7 +151,6 @@ export default function UnitsForm({
             </DialogTitle>
             <DialogContent>
                 <TextField
-                    autoFocus
                     size='small'
                     value={unit.name}
                     onChange={handleNameChange}

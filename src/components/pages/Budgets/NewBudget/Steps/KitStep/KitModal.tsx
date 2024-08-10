@@ -100,7 +100,6 @@ function ProductValues({
                 className='mb-3'
                 value={data.model || ''}
                 onChange={(e) => {
-                    console.log(e.target.value)
                     const selectedProduct = productOptions.find(
                         (product) => product.model === e.target.value
                     )

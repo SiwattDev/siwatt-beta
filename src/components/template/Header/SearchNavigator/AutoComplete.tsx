@@ -1,4 +1,8 @@
-import { DescriptionRounded, SearchRounded } from '@mui/icons-material'
+import {
+    DescriptionRounded,
+    PersonAddRounded,
+    SearchRounded,
+} from '@mui/icons-material'
 import {
     Autocomplete,
     InputAdornment,
@@ -9,8 +13,9 @@ import {
     TextField,
     useTheme,
 } from '@mui/material'
-import React, { useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { SearchContext } from '../../../../contexts/SearchContext'
 
 type Action = {
     title: string
@@ -26,6 +31,7 @@ export default function AutoComplete({
     const theme = useTheme()
     const navigate = useNavigate()
     const inputRef = useRef<HTMLInputElement>(null)
+    const { setSearch } = useContext(SearchContext)
 
     useEffect(() => {
         if (inputRef.current) {
@@ -38,6 +44,7 @@ export default function AutoComplete({
             target: HTMLInputElement
         }
     ) => {
+        setSearch(event.target.value)
         if (event.key === 'Enter') {
             const selectedOption = actions.find(
                 (option) => option.title === event.target.value
@@ -55,10 +62,16 @@ export default function AutoComplete({
             icon: 'description',
             action: () => navigate('/dashboard/budgets/new'),
         },
+        {
+            title: 'Nova Entidade',
+            icon: 'personAdd',
+            action: () => navigate('/dashboard/create-entity'),
+        },
     ]
 
     const iconsComponents: Record<string, JSX.Element> = {
         description: <DescriptionRounded />,
+        personAdd: <PersonAddRounded />,
     }
 
     return (
@@ -98,7 +111,7 @@ export default function AutoComplete({
                         {...params}
                         placeholder='Pesquisar...'
                         inputRef={inputRef}
-                        onKeyDown={handleKeyDown}
+                        onKeyUp={handleKeyDown}
                         InputProps={{
                             ...params.InputProps,
                             startAdornment: (

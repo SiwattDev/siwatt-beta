@@ -29,8 +29,6 @@ export default function Budgets() {
                 },
             })
 
-            console.log(response.data)
-
             if (!response.data) {
                 showAlert({
                     message: 'Erro ao buscar os orçamentos',

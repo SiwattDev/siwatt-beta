@@ -55,7 +55,6 @@ export default function ResetPasswordForm({
         setUserErrors({ email: emailError })
 
         if (!emailError) {
-            console.log('Reset de senha solicitado', user)
             showAlert({
                 message: 'Solicitação de redefinição de senha enviada',
                 type: 'success',

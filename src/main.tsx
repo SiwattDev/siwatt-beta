@@ -1,4 +1,5 @@
 import { ThemeProvider, createTheme } from '@mui/material'
+import { LoadScript } from '@react-google-maps/api'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import React from 'react'
@@ -7,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.min.css'
 import { AlertProvider } from './contexts/AlertContext.tsx'
 import { BudgetProvider } from './contexts/BudgetContext.tsx'
 import { DarkModeProvider } from './contexts/DarkModeContext.tsx'
+import { SearchProvider } from './contexts/SearchContext.tsx'
 import { UserProvider } from './contexts/UserContext.tsx'
 import Router from './router.tsx'
 
@@ -50,7 +52,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 <AlertProvider>
                     <UserProvider>
                         <BudgetProvider>
-                            <Router />
+                            <SearchProvider>
+                                <LoadScript googleMapsApiKey='AIzaSyAeOJrvDZOVM5_X-6uGan_Cu0ZiPH5HGVw'>
+                                    <Router />
+                                </LoadScript>
+                            </SearchProvider>
                         </BudgetProvider>
                     </UserProvider>
                 </AlertProvider>

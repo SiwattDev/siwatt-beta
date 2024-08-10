@@ -2,12 +2,16 @@ import { Navigate, Route, HashRouter as Router, Routes } from 'react-router-dom'
 import Budgets from './components/pages/Budgets/Budgets'
 import BudgetDetails from './components/pages/Budgets/NewBudget/BudgetDetails/BudgetDetails'
 import NewBudget from './components/pages/Budgets/NewBudget/NewBudget'
+import Clients from './components/pages/Clients/Clients'
 import CreateEntity from './components/pages/CreateEntity/CreateEntity'
 import Dashboard from './components/pages/Dashboard'
 import Funnel from './components/pages/Funnel/Funnel'
 import Login from './components/pages/Login/Login'
 import NotFound from './components/pages/NotFound/NotFound'
+import Teams from './components/pages/Teams/Teams'
 import Units from './components/pages/Units/Units'
+import SellerVisits from './components/pages/Visits/SellerVisits/SellerVisits'
+import Visits from './components/pages/Visits/Visits'
 
 function AppRouter() {
     const routes = [
@@ -46,6 +50,22 @@ function AppRouter() {
                 {
                     path: 'create-entity',
                     element: <CreateEntity />,
+                },
+                {
+                    path: 'clients',
+                    element: <Clients />,
+                },
+                {
+                    path: 'visits',
+                    element: <Visits />,
+                },
+                {
+                    path: 'visits/seller/:sellerId',
+                    element: <SellerVisits />,
+                },
+                {
+                    path: 'teams',
+                    element: <Teams />,
                 },
             ],
         },
