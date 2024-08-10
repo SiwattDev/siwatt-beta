@@ -44,7 +44,7 @@ export default function BudgetDetails() {
     }
 
     useEffect(() => {
-        const getResult = async () => {
+        const fetchResult = async () => {
             if (!user || !user.id || !id) return
 
             try {
@@ -109,7 +109,7 @@ export default function BudgetDetails() {
             }
         }
 
-        getResult()
+        fetchResult()
     }, [user.id])
 
     if (loading) return <Loading message='Calculando...' />

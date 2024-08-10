@@ -18,7 +18,7 @@ export default function ClientData() {
     const { backendErros } = useUtils()
 
     useEffect(() => {
-        const getClientData = async () => {
+        const fetchClientData = async () => {
             try {
                 if (typeof budget.client === 'string') {
                     const clientResponse = await axios.get(`${baseURL}/doc`, {
@@ -70,7 +70,7 @@ export default function ClientData() {
             }
         }
 
-        getClientData()
+        fetchClientData()
     }, [budget.client])
 
     if (loading) return <Loading message='Carregando dados...' />

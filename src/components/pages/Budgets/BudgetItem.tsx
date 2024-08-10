@@ -85,7 +85,7 @@ export default function BudgetItem({
         },
     ]
 
-    const getClientData = async (id: string) => {
+    const fetchClientData = async (id: string) => {
         try {
             const response = await axios.get(`${baseURL}/doc`, {
                 params: {
@@ -116,7 +116,7 @@ export default function BudgetItem({
     useEffect(() => {
         const fetchClient = async () => {
             if (!isClient(budget.client)) {
-                const clientData = await getClientData(budget.client)
+                const clientData = await fetchClientData(budget.client)
                 setClient(clientData)
             } else {
                 setClient(budget.client)

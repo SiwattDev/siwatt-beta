@@ -21,7 +21,7 @@ export default function Units() {
     const { backendErros } = useUtils()
     const { user } = useContext(UserContext)
 
-    const getUnits = async () => {
+    const fetchUnits = async () => {
         setLoading(true)
         try {
             const response = await axios.get(`${baseURL}/docs`, {
@@ -49,7 +49,7 @@ export default function Units() {
     }
 
     useEffect(() => {
-        getUnits()
+        fetchUnits()
     }, [])
 
     if (loading) return <Loading message='Procurando unidades' />
@@ -65,7 +65,7 @@ export default function Units() {
                 <Grid container spacing={2}>
                     {units.map((unit: any) => (
                         <Grid item xs={12} md={6} lg={4} key={unit.id}>
-                            <UnitItem unit={unit} refresh={getUnits} />
+                            <UnitItem unit={unit} refresh={fetchUnits} />
                         </Grid>
                     ))}
                 </Grid>
@@ -91,7 +91,7 @@ export default function Units() {
                 open={open}
                 onClose={() => {
                     setOpen(false)
-                    getUnits()
+                    fetchUnits()
                 }}
             />
         </React.Fragment>

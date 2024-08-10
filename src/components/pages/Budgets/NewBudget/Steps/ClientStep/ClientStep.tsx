@@ -32,7 +32,7 @@ export default function ClientStep() {
     }, [budget.client])
 
     useEffect(() => {
-        const getClients = async () => {
+        const fetchClients = async () => {
             const response = await axios.get(`${baseURL}/docs`, {
                 params: {
                     user: user.id,
@@ -42,7 +42,7 @@ export default function ClientStep() {
             setClients(response.data)
         }
 
-        getClients()
+        fetchClients()
     }, [user.id])
 
     const handleChange = (event: SelectChangeEvent<string>) => {

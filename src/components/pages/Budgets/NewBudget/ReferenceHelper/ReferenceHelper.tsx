@@ -116,7 +116,7 @@ const ReferenceHelper: React.FC = () => {
     const modulesPrice = modules?.totalPrice || 0
 
     useEffect(() => {
-        const getData = async () => {
+        const fetchData = async () => {
             try {
                 const averageConsumption =
                     calculateAverageEnergyBill(consumption)
@@ -150,7 +150,7 @@ const ReferenceHelper: React.FC = () => {
             }
         }
 
-        getData()
+        fetchData()
     }, [
         consumption,
         modulePower,

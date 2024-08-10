@@ -23,7 +23,7 @@ type Visit = {
     date: number
     locationData: LocationData
     visitImages: string[]
-    energyBills: EnergyBill[]
+    energyBills?: EnergyBill[]
     user: string
 }
 

@@ -56,7 +56,7 @@ export default function Clients() {
     ]
 
     useEffect(() => {
-        const getClients = async () => {
+        const fetchClients = async () => {
             try {
                 const response = await axios.get(`${baseURL}/docs`, {
                     params: {
@@ -85,7 +85,7 @@ export default function Clients() {
             }
         }
 
-        getClients()
+        fetchClients()
     }, [])
 
     if (loading) return <Loading message='Procurando dados dos clientes...' />

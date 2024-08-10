@@ -19,7 +19,7 @@ export default function Budgets() {
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
     const { user } = useContext(UserContext)
-    const getBudgets = async () => {
+    const fetchBudgets = async () => {
         setLoading(true)
         try {
             const response = await axios.get(`${baseURL}/docs`, {
@@ -52,7 +52,7 @@ export default function Budgets() {
     }
 
     useEffect(() => {
-        getBudgets()
+        fetchBudgets()
     }, [])
 
     if (loading) return <Loading message='Carregando orçamentos...' />
@@ -67,7 +67,7 @@ export default function Budgets() {
             <Grid container spacing={2}>
                 {budgets.map((budget: Budget) => (
                     <Grid item xs={12} sm={12} md={6} lg={4} key={budget.id}>
-                        <BudgetItem budget={budget} update={getBudgets} />
+                        <BudgetItem budget={budget} update={fetchBudgets} />
                     </Grid>
                 ))}
             </Grid>

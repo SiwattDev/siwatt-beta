@@ -11,6 +11,7 @@ import NotFound from './components/pages/NotFound/NotFound'
 import Teams from './components/pages/Teams/Teams'
 import Units from './components/pages/Units/Units'
 import SellerVisits from './components/pages/Visits/SellerVisits/SellerVisits'
+import VisitDetails from './components/pages/Visits/SellerVisits/VisitDetails/VisitDetails'
 import Visits from './components/pages/Visits/Visits'
 
 function AppRouter() {
@@ -62,6 +63,10 @@ function AppRouter() {
                 {
                     path: 'visits/seller/:sellerId',
                     element: <SellerVisits />,
+                },
+                {
+                    path: 'visits/seller/:sellerId/:visitId',
+                    element: <VisitDetails />,
                 },
                 {
                     path: 'teams',

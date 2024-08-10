@@ -21,7 +21,7 @@ export default function KitStep() {
     const { user } = useContext(UserContext)
 
     useEffect(() => {
-        const getKits = async () => {
+        const fetchKits = async () => {
             setLoading(true)
             try {
                 const response = await axios.get(`${baseURL}/generate-kits`, {
@@ -85,7 +85,7 @@ export default function KitStep() {
             }
         }
 
-        getKits()
+        fetchKits()
     }, [user.id])
 
     const setKit = (id: string, kit: Kit) => {
