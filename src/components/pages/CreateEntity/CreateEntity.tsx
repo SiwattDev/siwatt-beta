@@ -21,7 +21,11 @@ import UserData from './EntityTypes.tsx/UserData'
 
 type EntityTypes = 'user' | 'client' | 'supplier' | 'partner'
 
-export default function CreateEntity() {
+export default function CreateEntity({
+    entity,
+}: {
+    entity?: User | Client | Supplier | Partner
+}) {
     const [typeEntity, setTypeEntity] = useState<EntityTypes>('user')
     const { user } = useContext(UserContext)
     const { showAlert } = useContext(AlertContext)
@@ -36,12 +40,6 @@ export default function CreateEntity() {
                 path: type + 's',
                 data,
             })
-
-            if (!response)
-                throw {
-                    message: 'Erro ao salvar entidade',
-                    code: 'UNKNOWN_ERROR',
-                }
 
             showAlert({
                 message: 'Entidade salva com sucesso',
@@ -67,11 +65,6 @@ export default function CreateEntity() {
                     data: userData,
                 }
             )
-            if (!response)
-                throw {
-                    message: 'Erro ao criar usuário',
-                    code: 'UNKNOWN_ERROR',
-                }
 
             showAlert({
                 message: 'Usuário criado com sucesso',

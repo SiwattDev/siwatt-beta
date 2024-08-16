@@ -119,8 +119,6 @@ export default function UnitsForm({
                       data: unit,
                   })
 
-            if (!response.data) throw { message: 'Erro ao salvar filial' }
-
             showAlert({
                 message: 'Filial salva com sucesso',
                 type: 'success',

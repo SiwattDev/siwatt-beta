@@ -49,7 +49,7 @@ export default function Sidebar() {
         { to: 'clients', icon: <PeopleAltRounded />, text: 'Clientes' },
         { to: 'visits', icon: <ShareLocationRounded />, text: 'CRM Visitas' },
         { to: 'products', icon: <BentoRounded />, text: 'Produtos' },
-        { to: 'agents', icon: <BadgeRounded />, text: 'Usuários' },
+        { to: 'users', icon: <BadgeRounded />, text: 'Usuários' },
         { to: 'teams', icon: <Diversity3Rounded />, text: 'Equipes' },
         { to: 'partners', icon: <HandshakeRounded />, text: 'Parceiros' },
         { to: 'units', icon: <ApartmentRounded />, text: 'Unidades' },

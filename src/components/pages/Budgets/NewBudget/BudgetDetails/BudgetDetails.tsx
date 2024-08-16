@@ -98,6 +98,21 @@ export default function BudgetDetails() {
 
                 setResult(resultData.data)
                 setLoading(false)
+
+                await axios.put(`${baseURL}/doc?user=${user.id}`, {
+                    path: 'budgets',
+                    id: id.toString(),
+                    data: {
+                        ...budgetData.data,
+                        plantValue: resultData.data.plantValue,
+                        peakGeneration: resultData.data.peakGeneration,
+                    },
+                })
+
+                showAlert({
+                    message: 'Dados atualizados com sucesso',
+                    type: 'success',
+                })
             } catch (error) {
                 console.log(error)
                 const err: any = error

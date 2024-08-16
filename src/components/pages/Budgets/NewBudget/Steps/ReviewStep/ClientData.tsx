@@ -29,12 +29,6 @@ export default function ClientData() {
                         },
                     })
 
-                    if (!clientResponse.data)
-                        throw {
-                            message: 'Cliente não encontrado',
-                            code: 'NOT_FOUND',
-                        }
-
                     const clientData = clientResponse.data
 
                     if (typeof clientData.seller === 'string') {

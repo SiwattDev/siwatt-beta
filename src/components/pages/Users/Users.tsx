@@ -14,15 +14,15 @@ import { SearchContext } from '../../../contexts/SearchContext'
 import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
 import useUtils from '../../../hooks/useUtils'
-import { Client } from '../../../types/EntityTypes'
+import { User } from '../../../types/EntityTypes'
 import DynamicTable from '../../template/DynamicTable/DynamicTable'
 import Loading from '../../template/Loading/Loading'
 import PageHeader from '../../template/PageHeader/PageHeader'
 import SimpleMenu from '../../template/SimpleMenu/SimpleMenu'
 
-export default function Clients() {
+export default function Users() {
     const [loading, setLoading] = useState(true)
-    const [clients, setClients] = useState<Client[]>([])
+    const [users, setUsers] = useState<User[]>([])
     const { user } = useContext(UserContext)
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
@@ -30,9 +30,6 @@ export default function Clients() {
 
     const fieldLabels = {
         id: 'ID',
-        seller: 'Vendedor',
-        store_facade: 'Fachada da Loja',
-        fantasy_name: 'Nome Fantasia',
         'address.reference': 'Referência do Endereço',
         'address.number': 'Número',
         'address.uf': 'UF',
@@ -41,28 +38,12 @@ export default function Clients() {
         'address.neighborhood': 'Bairro',
         'address.cep': 'CEP',
         type_entity: 'Tipo de Entidade',
-        cpf: 'CPF',
-        cnpj: 'CNPJ',
-        'direct_contact.phone': 'Telefone de Contato Direto',
-        'direct_contact.name': 'Nome do Contato Direto',
-        'direct_contact.cpf': 'CPF do Contato Direto',
-        'direct_contact.birth_of_date': 'Data de Nascimento do Contato Direto',
-        'direct_contact.email': 'Email do Contato Direto',
-        state_registration: 'Inscrição Estadual',
-        docs: 'Documentos',
         phone: 'Telefone',
         name: 'Nome',
         email: 'Email',
     }
 
-    const defaultVisibleFields = [
-        'name',
-        'phone',
-        'seller',
-        'cpf',
-        'cnpj',
-        'address.cep',
-    ]
+    const defaultVisibleFields = ['name', 'phone', 'email', 'address.cep']
 
     const customColumns = [
         {
@@ -108,71 +89,58 @@ export default function Clients() {
     ]
 
     useEffect(() => {
-        const fetchClients = async () => {
+        const fetchUsers = async () => {
             try {
-                const clientsResponse = await axios.get(`${baseURL}/docs`, {
-                    params: {
-                        user: user.id,
-                        path: 'clients',
-                    },
-                })
-
-                const usersResponse = await axios.get(`${baseURL}/docs`, {
+                const response = await axios.get(`${baseURL}/docs`, {
                     params: {
                         user: user.id,
                         path: 'users',
                     },
                 })
 
-                const sellers = usersResponse.data.filter(
-                    (user: any) =>
-                        user.type === 'seller' || user.user_type === 'seller'
-                )
-
-                const clientsWithSellerData = clientsResponse.data.map(
-                    (client: any) => {
-                        return {
-                            ...client,
-                            seller: sellers.find(
-                                (seller: any) => seller.id === client.seller
-                            )?.name,
-                        }
-                    }
-                )
-
-                setLoading(false)
-                setClients(clientsWithSellerData)
-            } catch (error) {
-                setLoading(false)
-                console.log(error)
-                const err: any = error
+                setUsers(response.data)
+            } catch (error: any) {
+                console.error(error)
                 const code =
-                    err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+                    error?.response?.data?.code || error.code || 'UNKNOWN_ERROR'
                 const message =
-                    backendErros(code) || err.message || 'Erro inesperado'
+                    backendErros(code) || error.message || 'Erro inesperado'
                 showAlert({ message, type: 'error' })
+            } finally {
+                setLoading(false)
             }
         }
 
-        fetchClients()
+        fetchUsers()
     }, [])
 
-    if (loading) return <Loading message='Procurando dados dos clientes...' />
+    if (loading) return <Loading message='Procurando dados dos usuários...' />
 
     const visibleFields = defaultVisibleFields.filter((field) =>
-        clients.some((client) => field in client)
+        users.some(
+            (user: User) =>
+                field
+                    .split('.')
+                    .reduce(
+                        (o, key) =>
+                            o && typeof o === 'object'
+                                ? o[key as keyof typeof o]
+                                : '',
+                        user as any
+                    ) !== ''
+        )
     )
 
     return (
         <React.Fragment>
             <PageHeader
-                title='Clientes'
+                title='Users'
                 icon={<PeopleAlt />}
-                path={['dashboard', 'clients']}
+                path={['dashboard', 'users']}
             />
-            {clients && clients.length > 0 && (
+            {users && users.length > 0 && (
                 <DynamicTable
-                    data={clients}
+                    data={users}
                     defaultVisibleFields={visibleFields}
                     fieldLabels={fieldLabels}
                     filterText={search}

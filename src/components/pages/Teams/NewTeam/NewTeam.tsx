@@ -58,10 +58,6 @@ const NewTeam: React.FC<TeamDialogProps> = ({ open, onClose }) => {
                     },
                 })
 
-                if (!usersResponse.data || !unitsResponse.data) {
-                    throw new Error('Erro ao buscar dados')
-                }
-
                 const managersUsers = usersResponse.data.filter(
                     (item: User) => item.type === 'sales-manager'
                 )
@@ -134,13 +130,6 @@ const NewTeam: React.FC<TeamDialogProps> = ({ open, onClose }) => {
                     data: team,
                 }
             )
-
-            if (!response.data) {
-                throw {
-                    message: 'Erro ao adicionar equipe',
-                    code: 'UNKNOWN_ERROR',
-                }
-            }
 
             showAlert({ message: 'Equipe adicionada', type: 'success' })
             onClose()

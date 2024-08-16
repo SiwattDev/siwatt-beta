@@ -137,18 +137,14 @@ export default function NewBudget() {
                         )
                     }
 
-                    if (!response.data)
-                        throw {
-                            message: `Erro ao ${budget.editing ? 'atualizar' : 'criar'} orçamento`,
-                            code: 'UNKNOWN_ERROR',
-                        }
-
-                    navigate(`/dashboard/budgets/${response.data.id}`)
                     setSaving(false)
                     showAlert({
                         message: `Orçamento ${budget.editing ? 'atualizado' : 'criado'} com sucesso!`,
                         type: 'success',
                     })
+                    localStorage.removeItem('budget')
+                    setBudget({} as Budget)
+                    navigate(`/dashboard/budgets/${response.data.id}`)
                 } catch (error) {
                     setSaving(false)
                     console.error(error)

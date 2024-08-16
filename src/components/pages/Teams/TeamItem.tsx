@@ -1,9 +1,12 @@
+import { EditRounded } from '@mui/icons-material'
 import {
     Box,
+    Button,
     Card,
     CardContent,
     Divider,
     Paper,
+    Tooltip,
     Typography,
     useTheme,
 } from '@mui/material'
@@ -21,7 +24,17 @@ export default function TeamItem({
     return (
         <Card>
             <CardContent>
-                <Typography variant='h6'>Equipe: {team.name}</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant='h6'>Equipe: {team.name}</Typography>
+                    <Tooltip title='Editar equipe'>
+                        <Button
+                            sx={{ minWidth: 0, padding: '0px 5px' }}
+                            variant='contained'
+                        >
+                            <EditRounded fontSize='small' />
+                        </Button>
+                    </Tooltip>
+                </Box>
                 <Typography variant='body1'>Vendedores associados:</Typography>
                 <Paper
                     className='mt-1 p-0 border'

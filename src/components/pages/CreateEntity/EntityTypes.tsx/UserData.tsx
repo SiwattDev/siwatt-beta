@@ -42,9 +42,6 @@ export default function UserData({ onSave }: { onSave: (v: User) => void }) {
                     },
                 })
 
-                if (!response.data)
-                    throw new Error('Nenhuma unidade encontrada')
-
                 setUnits(response.data)
             } catch (error) {
                 console.log(error)

@@ -62,13 +62,6 @@ export default function SellerVisits() {
                     },
                 })
 
-                if (!sellerResponse.data || !visitsResponse.data) {
-                    throw {
-                        message: 'Erro ao buscar dados',
-                        code: 'UNKNOWN_ERROR',
-                    }
-                }
-
                 const sellerVisits = visitsResponse.data.filter(
                     (visit: any) => visit.user === sellerId
                 )
@@ -133,10 +126,12 @@ export default function SellerVisits() {
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                     <Card>
-                        <VisitsGraph
-                            dateRange={dateRange}
-                            visits={filteredVisits}
-                        />
+                        <div style={{ height: '400px' }}>
+                            <VisitsGraph
+                                dateRange={dateRange}
+                                visits={filteredVisits}
+                            />
+                        </div>
                     </Card>
                 </Grid>
                 <Grid item xs={12} md={6}>

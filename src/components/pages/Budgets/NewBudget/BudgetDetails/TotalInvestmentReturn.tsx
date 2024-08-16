@@ -10,22 +10,27 @@ export default function TotalInvestmentReturn({
     const theme = useTheme()
 
     return (
-        <ResponsiveBarChart
-            data={{
-                labels: Array.from({ length: 24 }, (_, i) => `${i + 2} anos`),
-                datasets: [
-                    {
-                        label: 'Rentabilidade total do investimento',
-                        data: result.investmentReturn
-                            .slice(1)
-                            .map((value) => parseFloat(value.toFixed(2))),
-                        backgroundColor: theme.palette.success.light,
-                        borderWidth: 0,
-                    },
-                ],
-            }}
-            options={{ plugins: { title: { display: true } } }}
-            title='Rentabilidade total do investimento'
-        />
+        <div style={{ height: '400px' }}>
+            <ResponsiveBarChart
+                data={{
+                    labels: Array.from(
+                        { length: 24 },
+                        (_, i) => `${i + 2} anos`
+                    ),
+                    datasets: [
+                        {
+                            label: 'Rentabilidade total do investimento',
+                            data: result.investmentReturn
+                                .slice(1)
+                                .map((value) => parseFloat(value.toFixed(2))),
+                            backgroundColor: theme.palette.success.light,
+                            borderWidth: 0,
+                        },
+                    ],
+                }}
+                options={{ plugins: { title: { display: true } } }}
+                title='Rentabilidade total do investimento'
+            />
+        </div>
     )
 }

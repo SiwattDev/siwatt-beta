@@ -17,26 +17,28 @@ export default function Payback({ result }: { result: BudgetResult }) {
                     </Typography>
                 </CardContent>
             </Card>
-            <ResponsiveBarChart
-                data={{
-                    labels: Array.from(
-                        { length: 25 },
-                        (_, i) => `${i + 1} anos`
-                    ),
-                    datasets: [
-                        {
-                            label: 'Retorno Financeiro',
-                            data: result.investmentReturnPayback.returnIn25Years.map(
-                                (value) => parseFloat(value.toFixed(2))
-                            ),
-                            backgroundColor: theme.palette.secondary.main,
-                            borderWidth: 0,
-                        },
-                    ],
-                }}
-                options={{ plugins: { title: { display: true } } }}
-                title='Payback em 25 anos'
-            />
+            <div style={{ height: '400px' }}>
+                <ResponsiveBarChart
+                    data={{
+                        labels: Array.from(
+                            { length: 25 },
+                            (_, i) => `${i + 1} anos`
+                        ),
+                        datasets: [
+                            {
+                                label: 'Retorno Financeiro',
+                                data: result.investmentReturnPayback.returnIn25Years.map(
+                                    (value) => parseFloat(value.toFixed(2))
+                                ),
+                                backgroundColor: theme.palette.secondary.main,
+                                borderWidth: 0,
+                            },
+                        ],
+                    }}
+                    options={{ plugins: { title: { display: true } } }}
+                    title='Payback em 25 anos'
+                />
+            </div>
         </React.Fragment>
     )
 }

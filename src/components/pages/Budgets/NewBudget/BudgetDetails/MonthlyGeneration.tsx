@@ -64,7 +64,7 @@ export default function MonthlyGeneration({
     const shuffledColors = shuffle(colors)
 
     return (
-        <div>
+        <div style={{ height: '400px' }}>
             <ResponsiveBarChart
                 data={{
                     labels: months,

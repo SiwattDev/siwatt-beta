@@ -95,12 +95,6 @@ export default function BudgetItem({
                 },
             })
 
-            if (!response.data)
-                throw {
-                    message: 'Nenhum cliente encontrado',
-                    code: 'NOT_FOUND',
-                }
-
             return response.data
         } catch (error) {
             console.log(error)
@@ -250,7 +244,7 @@ export default function BudgetItem({
                         </Typography>
                         <Typography>
                             <strong>Tamanho da Usina:</strong>{' '}
-                            {budget.peakGeneration}
+                            {budget.peakGeneration} kWp
                         </Typography>
                         <Typography>
                             <strong>

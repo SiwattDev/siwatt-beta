@@ -81,7 +81,7 @@ export default function Units() {
                 <Fab
                     color='default'
                     aria-label='add'
-                    sx={{ position: 'fixed', bottom: 16, right: 16 }}
+                    sx={{ position: 'fixed', bottom: 25, right: 25 }}
                     onClick={() => setOpen(true)}
                 >
                     <AddRounded />

@@ -52,6 +52,9 @@ type Budget = {
     status: string
     draft?: boolean
     editing?: boolean
+    plantValue: number
+    createdAt: string
+    updatedAt?: string
 }
 
 type BudgetWithClientData = Budget & { client: Client; seller: Seller }

@@ -44,12 +44,6 @@ export default function ClientData({
                     },
                 })
 
-                if (!response.data)
-                    throw {
-                        message: 'Erro ao buscar vendedores',
-                        code: 'UNKNOWN_ERROR',
-                    }
-
                 const sellersUsers = response.data.filter(
                     (item: Seller) =>
                         item.type === 'seller' || item.user_type === 'seller'

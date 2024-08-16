@@ -57,6 +57,12 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
     const [page, setPage] = useState<number>(0)
     const [rowsPerPage, setRowsPerPage] = useState<number>(5)
 
+    const getNestedProperty = (obj: any, path: string) => {
+        return path.split('.').reduce((prev, curr) => {
+            return prev ? prev[curr] : null
+        }, obj)
+    }
+
     const handleRequestSort = (property: string) => {
         const isAsc = orderBy === property && order === 'asc'
         setOrder(isAsc ? 'desc' : 'asc')
@@ -82,8 +88,8 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
     }
 
     const descendingComparator = (a: any, b: any, orderBy: string) => {
-        const aValue = a[orderBy]
-        const bValue = b[orderBy]
+        const aValue = getNestedProperty(a, orderBy)
+        const bValue = getNestedProperty(b, orderBy)
 
         const isDate = (value: string) => {
             return /^\d{2}\/\d{2}\/\d{4}$/.test(value)
@@ -136,12 +142,13 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
     const filterData = (data: any[], filterText: string) => {
         if (!filterText) return data
         return data.filter((row) =>
-            visibleFields.some((field) =>
-                row[field]
+            visibleFields.some((field) => {
+                const value = getNestedProperty(row, field)
+                return value
                     ?.toString()
                     .toLowerCase()
                     .includes(filterText.toLowerCase())
-            )
+            })
         )
     }
 
@@ -253,7 +260,9 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                                 <TableRow key={index}>
                                     {visibleFields.map((field) => (
                                         <StyledTableCell key={field}>
-                                            {renderCellContent(row[field])}
+                                            {renderCellContent(
+                                                getNestedProperty(row, field)
+                                            )}
                                         </StyledTableCell>
                                     ))}
                                     {customColumns.map((column, i) => (
@@ -269,7 +278,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[5, 10, 25, 50, 100]}
                 component='div'
                 count={sortedData.length}
                 rowsPerPage={rowsPerPage}

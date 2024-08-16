@@ -36,7 +36,7 @@ export default () => {
     const { budget } = useContext(BudgetContext)
 
     const extractNumbers = (inputString: string) => {
-        let numberString = inputString.replace(/\D/g, '')
+        let numberString = inputString.split(',')[0].replace(/\D/g, '')
         let number = Number(numberString)
         return number
     }
@@ -101,7 +101,7 @@ export default () => {
             case 'INVALID_PARAMS':
                 return 'Parâmetros inválidos'
             default:
-                return 'Erro inesperado'
+                return false
         }
     }
 

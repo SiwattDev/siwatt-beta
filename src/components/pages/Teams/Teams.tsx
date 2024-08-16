@@ -33,12 +33,6 @@ export default function Teams() {
                     },
                 })
 
-                if (!response.data)
-                    throw {
-                        message: 'Nenhuma equipe encontrada',
-                        code: 'NOT_FOUND',
-                    }
-
                 const teamsData = response.data
 
                 const processedTeams = await Promise.all(
@@ -128,7 +122,7 @@ export default function Teams() {
                 <Fab
                     color='default'
                     aria-label='add'
-                    sx={{ position: 'fixed', bottom: 16, right: 16 }}
+                    sx={{ position: 'fixed', bottom: 25, right: 25 }}
                     onClick={() => setOpen(true)}
                 >
                     <AddRounded />

@@ -44,13 +44,6 @@ export default function Visits() {
                     },
                 })
 
-                if (!visitsResponse.data || !usersResponse.data) {
-                    throw {
-                        message: 'Erro ao buscar dados',
-                        code: 'UNKNOWN_ERROR',
-                    }
-                }
-
                 const visitsData: Visit[] = visitsResponse.data
                 const sellersData: Seller[] = usersResponse.data.filter(
                     (user: Seller) =>

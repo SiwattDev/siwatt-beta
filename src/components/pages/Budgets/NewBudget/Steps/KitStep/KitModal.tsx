@@ -220,12 +220,6 @@ export default function KitModal({
                     },
                 })
 
-                if (!response.data)
-                    throw {
-                        message: 'Nenhum kit encontrado',
-                        code: 'NO_SUITABLE_KITS',
-                    }
-
                 const modules = response.data.filter(
                     (item: ProductWithType) => item.type === 'module'
                 )

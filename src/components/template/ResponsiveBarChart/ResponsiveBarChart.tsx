@@ -47,6 +47,9 @@ export default function ResponsiveBarChart({
             indexAxis: isMdUp ? 'x' : 'y',
             plugins: {
                 ...options.plugins,
+                datalabels: {
+                    display: false,
+                },
                 title: {
                     display: true,
                     text: title,
@@ -77,7 +80,13 @@ export default function ResponsiveBarChart({
     return (
         <Card elevation={3} style={{ height: '100%' }}>
             <CardContent style={{ height: '100%' }}>
-                <div style={{ height: '400px', width: '100%' }}>
+                <div
+                    style={{
+                        maxHeight: '400px',
+                        height: '100%',
+                        width: '100%',
+                    }}
+                >
                     <Bar data={data} options={responsiveOptions} />
                 </div>
             </CardContent>
