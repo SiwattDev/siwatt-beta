@@ -1,6 +1,7 @@
 import { Client, Seller } from './EntityTypes'
 
 type Product = {
+    type?: 'module' | 'inverter'
     id: string
     model: string
     unitPrice: number

@@ -4,14 +4,20 @@ import { Address } from '../../../../types/EntityTypes'
 
 export default function AddressData({
     onChange,
+    addressData,
 }: {
     onChange: (v: Address) => void
+    addressData?: Address
 }) {
     const [address, setAddress] = useState({} as Address)
 
     useEffect(() => {
         onChange(address)
     }, [address])
+
+    useEffect(() => {
+        if (addressData) setAddress(addressData)
+    }, [addressData])
 
     return (
         <React.Fragment>

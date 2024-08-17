@@ -37,6 +37,11 @@ export default function UnitItem({
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
     const { user } = useContext(UserContext)
+    const oneLineStyle = {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    }
 
     const deleteUnit = (id: string) => {
         if (!id) {
@@ -81,7 +86,11 @@ export default function UnitItem({
         <React.Fragment>
             <Card>
                 <CardContent>
-                    <Typography variant='h6'>{unit.name}</Typography>
+                    <Tooltip title={unit.name}>
+                        <Typography variant='h6' style={oneLineStyle}>
+                            {unit.name}
+                        </Typography>
+                    </Tooltip>
                     <Typography>
                         <strong>CNPJ</strong>: {formatToCNPJ(unit.cnpj)}
                     </Typography>

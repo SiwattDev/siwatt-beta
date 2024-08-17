@@ -1,3 +1,5 @@
+type EntityTypes = 'user' | 'client' | 'supplier' | 'partner'
+
 type Address = {
     road?: string // Depreciated
     street?: string
@@ -67,6 +69,7 @@ export type {
     Client,
     DirectContact,
     Entity,
+    EntityTypes,
     Partner,
     Seller,
     Supplier,

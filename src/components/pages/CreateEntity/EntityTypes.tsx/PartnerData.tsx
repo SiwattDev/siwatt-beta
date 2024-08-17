@@ -1,14 +1,16 @@
 import { SaveRounded } from '@mui/icons-material'
 import { Box, Button, Grid, TextField, Typography } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AlertContext } from '../../../../contexts/AlertContext'
 import { Partner } from '../../../../types/EntityTypes'
 import Address from './AddressData'
 
 export default function PartnerData({
     onSave,
+    data,
 }: {
     onSave: (v: Partner) => void
+    data?: Partner
 }) {
     const [partner, setPartner] = useState({} as Partner)
     const { showAlert } = useContext(AlertContext)
@@ -24,6 +26,10 @@ export default function PartnerData({
         }
         onSave(partner)
     }
+
+    useEffect(() => {
+        if (data) setPartner(data)
+    }, [data])
 
     return (
         <React.Fragment>
@@ -70,6 +76,7 @@ export default function PartnerData({
             <Box className='mb-3' />
             <Address
                 onChange={(address) => setPartner({ ...partner, address })}
+                addressData={partner.address || undefined}
             />
             <Box className='mb-3' />
             <Button variant='contained' onClick={handleSave}>

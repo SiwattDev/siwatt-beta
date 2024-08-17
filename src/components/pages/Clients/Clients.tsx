@@ -1,20 +1,21 @@
 import {
-    AddRounded,
     DeleteRounded,
     EditRounded,
     MoreVertRounded,
     PeopleAlt,
-    VisibilityRounded,
 } from '@mui/icons-material'
 import { Button } from '@mui/material'
 import axios from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AlertContext } from '../../../contexts/AlertContext'
 import { SearchContext } from '../../../contexts/SearchContext'
 import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
+import { useConfirm } from '../../../hooks/useConfirm'
 import useUtils from '../../../hooks/useUtils'
-import { Client } from '../../../types/EntityTypes'
+import { Client, EntityTypes } from '../../../types/EntityTypes'
+import Confirm from '../../template/Confirm/Confirm'
 import DynamicTable from '../../template/DynamicTable/DynamicTable'
 import Loading from '../../template/Loading/Loading'
 import PageHeader from '../../template/PageHeader/PageHeader'
@@ -27,6 +28,105 @@ export default function Clients() {
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
     const { search } = useContext(SearchContext)
+    const { showConfirm, confirmState } = useConfirm()
+    const navigate = useNavigate()
+
+    const fetchClients = async () => {
+        try {
+            setLoading(true)
+            const clientsResponse = await axios.get(`${baseURL}/docs`, {
+                params: {
+                    user: user.id,
+                    path: 'clients',
+                },
+            })
+
+            const usersResponse = await axios.get(`${baseURL}/docs`, {
+                params: {
+                    user: user.id,
+                    path: 'users',
+                },
+            })
+
+            const sellers = usersResponse.data.filter(
+                (user: any) =>
+                    user.type === 'seller' || user.user_type === 'seller'
+            )
+
+            const clientsWithSellerData = clientsResponse.data.map(
+                (client: any) => {
+                    return {
+                        ...client,
+                        seller: sellers.find(
+                            (seller: any) => seller.id === client.seller
+                        )?.name,
+                    }
+                }
+            )
+
+            console.log('Dados dos clientes:', clientsWithSellerData)
+
+            setClients(clientsWithSellerData)
+            setLoading(false)
+        } catch (error) {
+            setLoading(false)
+            console.log(error)
+            const err: any = error
+            const code =
+                err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+            const message =
+                backendErros(code) || err.message || 'Erro inesperado'
+            showAlert({ message, type: 'error' })
+        }
+    }
+
+    const editClient = (row: any, entityType: EntityTypes) => {
+        navigate('/dashboard/create-entity', {
+            state: { entity: row, entityType },
+        })
+    }
+
+    const deleteClient = (id: string) => {
+        if (!id) {
+            showAlert({
+                message: 'Erro ao excluir cliente',
+                type: 'error',
+            })
+            return
+        }
+        showConfirm({
+            title: 'Excluir cliente',
+            message: 'Tem certeza que deseja excluir este cliente?',
+            onConfirm: async () => {
+                try {
+                    await axios.delete(`${baseURL}/doc?user=${user.id}`, {
+                        params: {
+                            path: 'clients',
+                            id: id,
+                        },
+                    })
+
+                    showAlert({
+                        message: 'Cliente excluído',
+                        type: 'success',
+                    })
+
+                    setLoading(true)
+                    await fetchClients()
+                    setLoading(false)
+                } catch (error) {
+                    console.log(error)
+                    const err: any = error
+                    const code =
+                        err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+                    const message =
+                        backendErros(code) || err.message || 'Erro inesperado'
+                    showAlert({ message, type: 'error' })
+                }
+            },
+            onCancel: () => {},
+        })
+    }
 
     const fieldLabels = {
         id: 'ID',
@@ -67,7 +167,7 @@ export default function Clients() {
     const customColumns = [
         {
             title: 'Ações',
-            render: (row: any) => (
+            render: (row: Client) => (
                 <SimpleMenu
                     trigger={
                         <Button
@@ -82,24 +182,14 @@ export default function Clients() {
                     }
                     items={[
                         {
-                            icon: <VisibilityRounded />,
-                            label: 'Ver detalhes',
-                            onClick: () => {},
-                        },
-                        {
                             icon: <EditRounded />,
                             label: 'Editar',
-                            onClick: () => {},
+                            onClick: () => editClient(row, 'client'),
                         },
                         {
                             icon: <DeleteRounded />,
                             label: 'Excluir',
-                            onClick: () => {},
-                        },
-                        {
-                            icon: <AddRounded />,
-                            label: 'Mais ações',
-                            onClick: () => {},
+                            onClick: () => deleteClient(row.id),
                         },
                     ]}
                 />
@@ -108,52 +198,6 @@ export default function Clients() {
     ]
 
     useEffect(() => {
-        const fetchClients = async () => {
-            try {
-                const clientsResponse = await axios.get(`${baseURL}/docs`, {
-                    params: {
-                        user: user.id,
-                        path: 'clients',
-                    },
-                })
-
-                const usersResponse = await axios.get(`${baseURL}/docs`, {
-                    params: {
-                        user: user.id,
-                        path: 'users',
-                    },
-                })
-
-                const sellers = usersResponse.data.filter(
-                    (user: any) =>
-                        user.type === 'seller' || user.user_type === 'seller'
-                )
-
-                const clientsWithSellerData = clientsResponse.data.map(
-                    (client: any) => {
-                        return {
-                            ...client,
-                            seller: sellers.find(
-                                (seller: any) => seller.id === client.seller
-                            )?.name,
-                        }
-                    }
-                )
-
-                setLoading(false)
-                setClients(clientsWithSellerData)
-            } catch (error) {
-                setLoading(false)
-                console.log(error)
-                const err: any = error
-                const code =
-                    err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
-                const message =
-                    backendErros(code) || err.message || 'Erro inesperado'
-                showAlert({ message, type: 'error' })
-            }
-        }
-
         fetchClients()
     }, [])
 
@@ -177,8 +221,19 @@ export default function Clients() {
                     fieldLabels={fieldLabels}
                     filterText={search}
                     customColumns={customColumns}
+                    key={clients.map((client) => client.id).join()}
                 />
             )}
+            <Confirm
+                open={!!confirmState.title}
+                onClose={() =>
+                    showConfirm({ ...confirmState, title: '', message: '' })
+                }
+                title={confirmState.title}
+                message={confirmState.message}
+                onConfirm={confirmState.onConfirm ?? (() => {})}
+                onCancel={confirmState.onCancel}
+            />
         </React.Fragment>
     )
 }

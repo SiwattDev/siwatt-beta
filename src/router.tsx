@@ -8,6 +8,7 @@ import Dashboard from './components/pages/Dashboard'
 import Funnel from './components/pages/Funnel/Funnel'
 import Login from './components/pages/Login/Login'
 import NotFound from './components/pages/NotFound/NotFound'
+import Partners from './components/pages/Partners/Partners'
 import Products from './components/pages/Products/Products'
 import Teams from './components/pages/Teams/Teams'
 import Units from './components/pages/Units/Units'
@@ -77,6 +78,10 @@ function AppRouter() {
                 {
                     path: 'visits/seller/:sellerId/:visitId',
                     element: <VisitDetails />,
+                },
+                {
+                    path: 'partners',
+                    element: <Partners />,
                 },
                 {
                     path: 'teams',

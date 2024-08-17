@@ -24,8 +24,10 @@ type EntityTypes = 'individual' | 'legal'
 
 export default function ClientData({
     onSave,
+    data,
 }: {
     onSave: (v: Client) => void
+    data?: Client
 }) {
     const [typeEntity, setTypeEntity] = useState<EntityTypes>('individual')
     const [client, setClient] = useState<Client>({} as Client)
@@ -62,10 +64,13 @@ export default function ClientData({
         fetchSellers()
     }, [])
 
+    useEffect(() => {
+        if (data) setClient(data)
+    }, [data])
+
     const handleSave = () => {
         if (
             !client.name ||
-            !client.email ||
             !client.phone ||
             (typeEntity === 'legal' && !client.cnpj) ||
             (typeEntity === 'individual' && !client.cpf) ||
@@ -205,10 +210,14 @@ export default function ClientData({
                 </Grid>
             </Grid>
             <Box className='mb-3' />
-            <Address onChange={(v) => setClient({ ...client, address: v })} />
+            <Address
+                onChange={(v) => setClient({ ...client, address: v })}
+                addressData={client.address || undefined}
+            />
             <Box className='mb-3' />
             <DirectContact
                 onChange={(v) => setClient({ ...client, directContact: v })}
+                directContactData={client.directContact || undefined}
             />
             <Box className='mb-3' />
             <Typography variant='h6' className='mb-2'>

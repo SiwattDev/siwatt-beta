@@ -10,7 +10,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AlertContext } from '../../../../contexts/AlertContext'
 import { Supplier } from '../../../../types/EntityTypes'
 import Address from './AddressData'
@@ -20,8 +20,10 @@ type EntityTypes = 'individual' | 'legal'
 
 export default function SupplierData({
     onSave,
+    data,
 }: {
     onSave: (v: Supplier) => void
+    data?: Supplier
 }) {
     const [typeEntity, setTypeEntity] = useState<EntityTypes>('individual')
     const [supplier, setSupplier] = useState<Supplier>({} as Supplier)
@@ -44,6 +46,10 @@ export default function SupplierData({
         }
         onSave(supplier)
     }
+
+    useEffect(() => {
+        if (data) setSupplier(data)
+    }, [data])
 
     return (
         <React.Fragment>
@@ -173,10 +179,12 @@ export default function SupplierData({
             <Box className='mb-3' />
             <Address
                 onChange={(v) => setSupplier({ ...supplier, address: v })}
+                addressData={supplier.address || undefined}
             />
             <Box className='mb-3' />
             <DirectContact
                 onChange={(v) => setSupplier({ ...supplier, directContact: v })}
+                directContactData={supplier.directContact || undefined}
             />
             <Box className='mb-3' />
             <Button variant='contained' onClick={handleSave}>

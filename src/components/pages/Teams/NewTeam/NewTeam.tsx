@@ -21,9 +21,10 @@ import TeamForm from './TeamForm'
 interface TeamDialogProps {
     open: boolean
     onClose: () => void
+    teamToEdit?: Team
 }
 
-const NewTeam: React.FC<TeamDialogProps> = ({ open, onClose }) => {
+const NewTeam: React.FC<TeamDialogProps> = ({ open, onClose, teamToEdit }) => {
     const [team, setTeam] = useState<Team>({
         id: 0,
         manager: '',
@@ -39,6 +40,10 @@ const NewTeam: React.FC<TeamDialogProps> = ({ open, onClose }) => {
     const { user } = useContext(UserContext)
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
+
+    useEffect(() => {
+        if (teamToEdit) setTeam(teamToEdit)
+    }, [teamToEdit])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -123,13 +128,10 @@ const NewTeam: React.FC<TeamDialogProps> = ({ open, onClose }) => {
 
         setLoading(true)
         try {
-            const response = await axios.post(
-                `${baseURL}/doc?user=${user.id}`,
-                {
-                    path: 'teams',
-                    data: team,
-                }
-            )
+            await axios.post(`${baseURL}/doc?user=${user.id}`, {
+                path: 'teams',
+                data: team,
+            })
 
             showAlert({ message: 'Equipe adicionada', type: 'success' })
             onClose()

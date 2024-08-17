@@ -7,7 +7,8 @@ import {
     RadioGroup,
 } from '@mui/material'
 import axios from 'axios'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { AlertContext } from '../../../contexts/AlertContext'
 import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
@@ -21,32 +22,52 @@ import UserData from './EntityTypes.tsx/UserData'
 
 type EntityTypes = 'user' | 'client' | 'supplier' | 'partner'
 
-export default function CreateEntity({
-    entity,
-}: {
-    entity?: User | Client | Supplier | Partner
-}) {
-    const [typeEntity, setTypeEntity] = useState<EntityTypes>('user')
+export default function CreateEntity() {
+    const { state } = useLocation()
     const { user } = useContext(UserContext)
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
 
-    const saveEntity = (
+    const entity = state?.entity as User | Client | Supplier | Partner
+    const entityType = state?.entityType as EntityTypes
+
+    const [typeEntity, setTypeEntity] = useState<EntityTypes>(
+        entityType || 'user'
+    )
+
+    useEffect(() => {
+        if (entityType) {
+            setTypeEntity(entityType)
+        }
+    }, [entityType])
+
+    const saveEntity = async (
         type: EntityTypes,
         data: User | Client | Supplier | Partner
     ) => {
         try {
-            const response = axios.post(`${baseURL}/doc?user=${user.id}`, {
-                path: type + 's',
-                data,
-            })
-
-            showAlert({
-                message: 'Entidade salva com sucesso',
-                type: 'success',
-            })
+            if (data.id) {
+                await axios.put(`${baseURL}/doc?user=${user.id}`, {
+                    path: type + 's',
+                    id: data.id,
+                    data,
+                })
+                showAlert({
+                    message: 'Entidade atualizada com sucesso',
+                    type: 'success',
+                })
+            } else {
+                await axios.post(`${baseURL}/doc?user=${user.id}`, {
+                    path: type + 's',
+                    data,
+                })
+                showAlert({
+                    message: 'Entidade criada com sucesso',
+                    type: 'success',
+                })
+            }
         } catch (error) {
-            console.log(error)
+            console.error(error)
             const err: any = error
             const code =
                 err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
@@ -58,20 +79,23 @@ export default function CreateEntity({
 
     const createUser = async (userData: User) => {
         try {
-            const response = await axios.post(
-                `${baseURL}/users?user=${user.id}`,
-                {
-                    path: 'users',
-                    data: userData,
+            if (userData.id)
+                throw {
+                    message: 'Não é possível alterar um usuário',
+                    code: 'NOT_ALLOWED',
                 }
-            )
+
+            await axios.post(`${baseURL}/users?user=${user.id}`, {
+                path: 'users',
+                data: userData,
+            })
 
             showAlert({
                 message: 'Usuário criado com sucesso',
                 type: 'success',
             })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             const err: any = error
             const code =
                 err?.response?.data?.code || err.code || 'UNKNOWN_ERROR'
@@ -98,11 +122,9 @@ export default function CreateEntity({
                             margin: '0 auto',
                         }}
                         value={typeEntity}
-                        onChange={(e) => {
-                            const value: EntityTypes = e.target
-                                .value as EntityTypes
-                            setTypeEntity(value)
-                        }}
+                        onChange={(e) =>
+                            setTypeEntity(e.target.value as EntityTypes)
+                        }
                         className='mb-3'
                     >
                         <FormControlLabel
@@ -127,13 +149,17 @@ export default function CreateEntity({
                         />
                     </RadioGroup>
                     {typeEntity === 'user' && (
-                        <UserData onSave={(user: User) => createUser(user)} />
+                        <UserData
+                            onSave={(user: User) => createUser(user)}
+                            data={entity as User}
+                        />
                     )}
                     {typeEntity === 'client' && (
                         <ClientData
                             onSave={(client: Client) =>
                                 saveEntity(typeEntity, client)
                             }
+                            data={entity as Client}
                         />
                     )}
                     {typeEntity === 'supplier' && (
@@ -141,6 +167,7 @@ export default function CreateEntity({
                             onSave={(supplier: Supplier) =>
                                 saveEntity(typeEntity, supplier)
                             }
+                            data={entity as Supplier}
                         />
                     )}
                     {typeEntity === 'partner' && (
@@ -148,6 +175,7 @@ export default function CreateEntity({
                             onSave={(partner: Partner) =>
                                 saveEntity(typeEntity, partner)
                             }
+                            data={entity as Partner}
                         />
                     )}
                 </CardContent>

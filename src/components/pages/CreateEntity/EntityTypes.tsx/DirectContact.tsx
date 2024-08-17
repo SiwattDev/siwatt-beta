@@ -1,17 +1,23 @@
 import { Grid, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { DirectContact } from '../../../../types/EntityTypes'
+import { DirectContact as DirectContactData } from '../../../../types/EntityTypes'
 
-export default function DirectContactData({
+export default function DirectContact({
     onChange,
+    directContactData,
 }: {
-    onChange: (v: DirectContact) => void
+    onChange: (v: DirectContactData) => void
+    directContactData?: DirectContactData
 }) {
-    const [directContact, setDirectContact] = useState({} as DirectContact)
+    const [directContact, setDirectContact] = useState({} as DirectContactData)
 
     useEffect(() => {
         onChange(directContact)
     }, [directContact])
+
+    useEffect(() => {
+        if (directContactData) setDirectContact(directContactData)
+    }, [directContactData])
 
     return (
         <React.Fragment>

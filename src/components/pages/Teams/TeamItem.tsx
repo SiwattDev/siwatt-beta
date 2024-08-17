@@ -10,9 +10,11 @@ import {
     Typography,
     useTheme,
 } from '@mui/material'
+import { useState } from 'react'
 import { Seller } from '../../../types/EntityTypes'
 import { Team } from '../../../types/TeamType'
 import { Unit } from '../../../types/UnitType'
+import NewTeam from './NewTeam/NewTeam'
 
 export default function TeamItem({
     team,
@@ -20,6 +22,21 @@ export default function TeamItem({
     team: Team & { sellers: Seller[]; unit: Unit }
 }) {
     const theme = useTheme()
+    const [open, setOpen] = useState(false)
+
+    const getDataForEdit = (): Team => {
+        const managerId =
+            typeof team.manager === 'string' ? team.manager : team.manager.id
+        const teamToEdit = {
+            id: team.id,
+            name: team.name,
+            unit: team.unit.id,
+            manager: managerId,
+            sellers: team.sellers.map((seller) => seller.id),
+        }
+
+        return teamToEdit as Team
+    }
 
     return (
         <Card>
@@ -30,6 +47,7 @@ export default function TeamItem({
                         <Button
                             sx={{ minWidth: 0, padding: '0px 5px' }}
                             variant='contained'
+                            onClick={() => setOpen(true)}
                         >
                             <EditRounded fontSize='small' />
                         </Button>
@@ -68,6 +86,11 @@ export default function TeamItem({
                     Total de vendedores: {team.sellers.length}
                 </Typography>
                 <Typography>Unidade: {team.unit?.name}</Typography>
+                <NewTeam
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    teamToEdit={getDataForEdit()}
+                />
             </CardContent>
         </Card>
     )

@@ -7,6 +7,8 @@ import { UserContext } from '../../../../contexts/UserContext'
 import { baseURL } from '../../../../globals'
 import useUtils from '../../../../hooks/useUtils'
 import { Budget, BudgetWithClientData } from '../../../../types/BudgetTypes'
+import { Team } from '../../../../types/TeamType'
+import { Unit } from '../../../../types/UnitType'
 import { Visit } from '../../../../types/VisitTypes'
 import Loading from '../../../template/Loading/Loading'
 import SelectPeriod from '../../../template/SelectPeriod/SelectPeriod'
@@ -21,6 +23,8 @@ export default function General() {
     const [loading, setLoading] = useState(true)
     const [budgets, setBudgets] = useState<BudgetWithClientData[]>([])
     const [visits, setVisits] = useState<Visit[]>([])
+    const [teams, setTeams] = useState<Team[]>([])
+    const [units, setUnits] = useState<Unit[]>([])
     const [dateRange, setDateRange] = useState<{
         startDate: string
         endDate: string
@@ -54,7 +58,26 @@ export default function General() {
                     },
                 })
 
-                if (!budgetsResponse.data || !visitsResponse.data)
+                const teamsResponse = await axios.get(`${baseURL}/docs`, {
+                    params: {
+                        user: user.id,
+                        path: 'teams',
+                    },
+                })
+
+                const unitsResponse = await axios.get(`${baseURL}/docs`, {
+                    params: {
+                        user: user.id,
+                        path: 'units',
+                    },
+                })
+
+                if (
+                    !budgetsResponse.data ||
+                    !visitsResponse.data ||
+                    !teamsResponse.data ||
+                    !unitsResponse.data
+                )
                     showAlert({
                         message: 'Adicione mais dados',
                         type: 'error',
@@ -98,6 +121,8 @@ export default function General() {
 
                 setBudgets(await Promise.all(budgetsWithClientData))
                 setVisits(visitsResponse.data)
+                setTeams(teamsResponse.data)
+                setUnits(unitsResponse.data)
                 setLoading(false)
             } catch (error) {
                 setLoading(false)
@@ -148,6 +173,8 @@ export default function General() {
                     endDate: dayjs(dateRange.endDate),
                 }}
             />
+            {/* <Box className='my-3' />
+            <AdvancedFilters /> */}
             <Box className='my-3' />
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>

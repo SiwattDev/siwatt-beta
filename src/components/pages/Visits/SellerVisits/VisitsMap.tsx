@@ -10,8 +10,8 @@ export default function VisitsMap({ visits }: { visits: Visit[] }) {
             }}
             zoom={13}
             center={{
-                lat: visits[0].locationData.latitude,
-                lng: visits[0].locationData.longitude,
+                lat: visits[0]?.locationData.latitude || 0,
+                lng: visits[0]?.locationData.longitude || 0,
             }}
         >
             {visits.map((visit, index) => (

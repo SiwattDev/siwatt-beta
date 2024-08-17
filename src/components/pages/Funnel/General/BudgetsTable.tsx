@@ -58,6 +58,7 @@ export default function BudgetsTable({
                         <StyledTableCell>Data</StyledTableCell>
                         <StyledTableCell>Tamanho da Usina</StyledTableCell>
                         <StyledTableCell>Valor</StyledTableCell>
+                        <StyledTableCell>Cidade</StyledTableCell>
                         <StyledTableCell>Status</StyledTableCell>
                     </TableRow>
                 </TableHead>
@@ -92,6 +93,9 @@ export default function BudgetsTable({
                                         style: 'currency',
                                         currency: 'BRL',
                                     })}
+                                </StyledTableCell>
+                                <StyledTableCell>
+                                    {budget.solarPlantSite.city}
                                 </StyledTableCell>
                                 <StyledTableCell>
                                     {replaceBudgetStatus(

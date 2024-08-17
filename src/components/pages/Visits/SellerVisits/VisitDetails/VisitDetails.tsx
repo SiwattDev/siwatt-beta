@@ -10,6 +10,7 @@ import useUtils from '../../../../../hooks/useUtils'
 import { Visit } from '../../../../../types/VisitTypes'
 import Loading from '../../../../template/Loading/Loading'
 import PageHeader from '../../../../template/PageHeader/PageHeader'
+import Actions from './Actions'
 import ClientData from './ClientData'
 import EnergyBills from './EnergyBills'
 import VisitComment from './VisitComment'
@@ -84,6 +85,8 @@ export default function VisitDetails() {
             <VisitComment visit={visit} />
             <Box sx={{ mt: 2 }} />
             <EnergyBills visit={visit} />
+            <Box sx={{ mt: 2 }} />
+            <Actions visit={visit} />
         </React.Fragment>
     )
 }
