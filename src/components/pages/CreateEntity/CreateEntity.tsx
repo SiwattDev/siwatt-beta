@@ -79,11 +79,20 @@ export default function CreateEntity() {
 
     const createUser = async (userData: User) => {
         try {
-            if (userData.id)
-                throw {
-                    message: 'Não é possível alterar um usuário',
-                    code: 'NOT_ALLOWED',
-                }
+            if (userData.id) {
+                await axios.put(`${baseURL}/users?user=${user.id}`, {
+                    path: 'users',
+                    id: userData.id,
+                    data: userData,
+                })
+
+                showAlert({
+                    message: 'Usuário atualizado com sucesso',
+                    type: 'success',
+                })
+
+                return
+            }
 
             await axios.post(`${baseURL}/users?user=${user.id}`, {
                 path: 'users',

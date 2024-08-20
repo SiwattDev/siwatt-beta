@@ -1,8 +1,11 @@
 import { NoteAddRounded, PersonAddAltRounded } from '@mui/icons-material'
 import { Button, Card, CardContent } from '@mui/material'
+import { useEffect } from 'react'
 import { Visit } from '../../../../../types/VisitTypes'
 
 export default function Actions({ visit }: { visit: Visit }) {
+    useEffect(() => {}, [visit])
+
     return (
         <Card>
             <CardContent sx={{ display: 'flex', gap: 2 }}>

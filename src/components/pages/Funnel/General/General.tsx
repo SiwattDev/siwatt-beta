@@ -33,6 +33,8 @@ export default function General() {
         endDate: dayjs().format('YYYY-MM-DD'),
     })
 
+    useEffect(() => {}, [teams, units])
+
     const handleDateChange = (period: {
         startDate: string
         endDate: string

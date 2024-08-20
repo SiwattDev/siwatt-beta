@@ -24,6 +24,8 @@ export default function AdvancedFilters() {
         { id: 2900108, nome: 'Abaíra' },
     ])
 
+    useEffect(() => {}, [setSelectedCities])
+
     useEffect(() => {
         const getCities = async () => {
             const response = await axios.get(
