@@ -81,8 +81,7 @@ export default function CreateEntity() {
         try {
             if (userData.id) {
                 await axios.put(`${baseURL}/users?user=${user.id}`, {
-                    path: 'users',
-                    id: userData.id,
+                    uid: userData.id,
                     data: userData,
                 })
 
