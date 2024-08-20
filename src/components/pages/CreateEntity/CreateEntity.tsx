@@ -80,6 +80,7 @@ export default function CreateEntity() {
     const createUser = async (userData: User) => {
         try {
             if (userData.id) {
+                console.log(userData)
                 await axios.put(`${baseURL}/users?user=${user.id}`, {
                     uid: userData.id,
                     data: userData,
