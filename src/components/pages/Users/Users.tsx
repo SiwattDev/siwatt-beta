@@ -62,25 +62,25 @@ export default function Users() {
     const deleteClient = (id: string) => {
         if (!id) {
             showAlert({
-                message: 'Erro ao excluir cliente',
+                message: 'Erro ao excluir usuário',
                 type: 'error',
             })
             return
         }
         showConfirm({
-            title: 'Excluir cliente',
-            message: 'Tem certeza que deseja excluir este cliente?',
+            title: 'Excluir usuário',
+            message: 'Tem certeza que deseja excluir este usuário?',
             onConfirm: async () => {
                 try {
                     await axios.delete(`${baseURL}/doc?user=${user.id}`, {
                         params: {
-                            path: 'clients',
+                            path: 'users',
                             id: id,
                         },
                     })
 
                     showAlert({
-                        message: 'Cliente excluído',
+                        message: 'Usuário excluído',
                         type: 'success',
                     })
 
