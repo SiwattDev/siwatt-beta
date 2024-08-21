@@ -15,6 +15,7 @@ import { Visit } from '../../../../types/VisitTypes'
 import Loading from '../../../template/Loading/Loading'
 import PageHeader from '../../../template/PageHeader/PageHeader'
 import SelectPeriod from '../../../template/SelectPeriod/SelectPeriod'
+import SellerData from './SellerData'
 import VisitsGraph from './VisitsGraph'
 import VisitsMap from './VisitsMap'
 import VisitsTable from './VisitsTable'
@@ -122,6 +123,8 @@ export default function SellerVisits() {
                     endDate: dayjs(dateRange.endDate),
                 }}
             />
+            <Box className='my-3' />
+            <SellerData seller={sellersWithVisits.seller as Seller} />
             <Box className='my-3' />
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
