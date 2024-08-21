@@ -1,4 +1,4 @@
-import { PersonRounded } from '@mui/icons-material'
+import { LocationOnRounded, PersonRounded } from '@mui/icons-material'
 import { Card, CardContent, Grid, Typography } from '@mui/material'
 import { Seller } from '../../../../types/EntityTypes'
 
@@ -27,7 +27,7 @@ export default function SellerData({ seller }: { seller: Seller }) {
                 <Card>
                     <CardContent>
                         <Typography variant='h6'>
-                            <PersonRounded /> Local do Vendedor
+                            <LocationOnRounded /> Local do Vendedor
                         </Typography>
                         <Typography>
                             <strong>Cep:</strong> {seller.address.cep}
