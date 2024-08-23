@@ -106,21 +106,28 @@ function ProductValues({
                     if (selectedProduct) {
                         const newProductData = {
                             ...data,
+                            id: selectedProduct.id,
                             model: selectedProduct.model,
                             power: selectedProduct.power.toString(),
                             unitPrice: extractNumbers(
-                                selectedProduct.price || '0'
+                                selectedProduct.price
+                                    ?.toString()
+                                    .split(',')[0] || '0'
                             ).toString(),
                             totalPrice: (
                                 parseFloat(data.quantity || '0') *
                                 parseFloat(
-                                    extractNumbers(selectedProduct.price || '0')
+                                    extractNumbers(
+                                        selectedProduct.price
+                                            ?.toString()
+                                            .split(',')[0] || '0'
+                                    )
                                 )
                             ).toFixed(2),
                         }
                         setData(newProductData)
                         onChange({
-                            id: productData.id,
+                            id: selectedProduct.id,
                             model: selectedProduct.model,
                             power: selectedProduct.power,
                             quantity: parseFloat(data.quantity || '0'),
@@ -251,15 +258,23 @@ export default function KitModal({
     }
 
     const handleModulesChange = (modules: Product) => {
-        setKitData((prev) => ({ ...prev, modules }))
+        setKitData((prev) => ({
+            ...prev,
+            modules: { ...prev.modules, ...modules },
+        }))
     }
 
     const handleInverterChange = (inverter: Product) => {
-        setKitData((prev) => ({ ...prev, inverter }))
+        setKitData((prev) => ({
+            ...prev,
+            inverter: { ...prev.inverter, ...inverter },
+        }))
     }
 
     const handleSave = () => {
         const { id, modules, inverter } = kitData
+
+        console.log('Kit:', kitData)
 
         if (
             !id ||
