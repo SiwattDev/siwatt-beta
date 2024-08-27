@@ -47,7 +47,9 @@ export default function Investment({
                             Quantidade de Placas
                         </Typography>
                         <Typography>
-                            {budget.kit.modules.amount} unidades
+                            {budget.kit.modules.amount ||
+                                budget.kit.modules.quantity}{' '}
+                            unidades
                         </Typography>
                     </CardContent>
                 </Card>
