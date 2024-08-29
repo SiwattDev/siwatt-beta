@@ -118,6 +118,7 @@ export default function NewBudget() {
                 try {
                     let response
                     if (budget.editing) {
+                        console.log(budget)
                         response = await axios.put(
                             `${baseURL}/doc?user=${user.id}`,
                             {
