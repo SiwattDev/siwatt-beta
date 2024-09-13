@@ -32,9 +32,8 @@ export default function ValidityStep() {
         }
     }, [budget.validity, setBudget])
 
-    const shouldDisableDate = (date: Dayjs) => {
-        return date.isBefore(dayjs(), 'day')
-    }
+    const shouldDisableDate = (date: Dayjs) =>
+        date.isBefore(dayjs().startOf('day'))
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
