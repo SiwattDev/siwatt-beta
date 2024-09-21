@@ -36,7 +36,6 @@ export default function DownloadPDF({
                 data: JSON.stringify({
                     ...budget,
                     ...result,
-                    validity: '2024-07-30',
                 }),
             })
 
