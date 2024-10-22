@@ -33,11 +33,11 @@ type User = Entity &
     Address & {
         user_type: string // Depreciated
         type:
-            | 'business-intermediator'
+            | 'business_intermediator'
             | 'ceo'
-            | 'commercial-diretor'
-            | 'commercial-manager'
-            | 'sales-manager'
+            | 'commercial_diretor'
+            | 'commercial_manager'
+            | 'sales_manager'
         password?: string
         unit: string
     }

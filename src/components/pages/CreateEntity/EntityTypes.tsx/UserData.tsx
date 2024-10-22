@@ -200,26 +200,26 @@ export default function UserData({
                         setUser({
                             ...user,
                             type: e.target.value as
-                                | 'business-intermediator'
+                                | 'business_intermediator'
                                 | 'ceo'
-                                | 'commercial-diretor'
-                                | 'commercial-manager'
-                                | 'sales-manager',
+                                | 'commercial_diretor'
+                                | 'commercial_manager'
+                                | 'sales_manager',
                         })
                     }
                 >
                     <MenuItem value=''>Selecione o tipo</MenuItem>
-                    <MenuItem value='business-intermediator'>
+                    <MenuItem value='business_intermediator'>
                         Intermediário de Negócios
                     </MenuItem>
                     <MenuItem value='ceo'>CEO</MenuItem>
-                    <MenuItem value='commercial-diretor'>
+                    <MenuItem value='commercial_diretor'>
                         Diretor Comercial
                     </MenuItem>
-                    <MenuItem value='commercial-manager'>
+                    <MenuItem value='commercial_manager'>
                         Gerente Comercial
                     </MenuItem>
-                    <MenuItem value='sales-manager'>Gerente de Vendas</MenuItem>
+                    <MenuItem value='sales_manager'>Gerente de Vendas</MenuItem>
                 </Select>
             </FormControl>
             <Box className='mb-3' />
