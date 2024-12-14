@@ -216,6 +216,7 @@ export default function Clients() {
             />
             {clients && clients.length > 0 && (
                 <DynamicTable
+                    tableID='clients-table'
                     data={clients}
                     defaultVisibleFields={visibleFields}
                     fieldLabels={fieldLabels}

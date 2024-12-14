@@ -81,6 +81,7 @@ export default function VisitsTable({ visits }: { visits: Visit[] }) {
 
     return (
         <DynamicTable
+            tableID='visits-table'
             data={replaceToDynamicTable(visits)}
             defaultVisibleFields={defaultVisibleFields}
             fieldLabels={fieldLabels}

@@ -1,6 +1,7 @@
 import {
     DeleteRounded,
     EditRounded,
+    HourglassBottomRounded,
     LockClockRounded,
     LockOpenRounded,
     LockRounded,
@@ -82,6 +83,12 @@ export default function BudgetItem({
             text: 'Cancelado',
             color: 'error' as AlertColor,
             icon: <NoEncryptionRounded className='me-1' fontSize='small' />,
+        },
+        {
+            status: 'pending_review',
+            text: 'Pendente',
+            color: 'warning' as AlertColor,
+            icon: <HourglassBottomRounded className='me-1' fontSize='small' />,
         },
     ]
 
@@ -273,7 +280,10 @@ export default function BudgetItem({
                                 variant='contained'
                                 fullWidth
                                 onClick={() => navigate(budget.id.toString())}
-                                disabled={loading}
+                                disabled={
+                                    loading ||
+                                    budget.status === 'pending_review'
+                                }
                             >
                                 Ver
                             </Button>

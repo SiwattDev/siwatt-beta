@@ -106,6 +106,7 @@ export default function BudgetDetails() {
                         ...budgetData.data,
                         plantValue: resultData.data.plantValue,
                         peakGeneration: resultData.data.peakGeneration,
+                        status: 'opened',
                     },
                 })
 

@@ -4,6 +4,7 @@ import {
     CloseRounded,
     DescriptionRounded,
     DoneRounded,
+    LockRounded,
 } from '@mui/icons-material'
 import {
     Box,
@@ -85,16 +86,21 @@ const validateStep = (step: number, budget: Budget) => {
 }
 
 export default function NewBudget() {
-    const { showAlert } = useContext(AlertContext)
     const theme = useTheme()
+    const navigate = useNavigate()
+    const draftAlertShown = useRef(false)
+    // states
     const [activeStep, setActiveStep] = useState(0)
     const [saving, setSaving] = useState(false)
+    const [userType, setUserType] = useState<string | null>(null)
+    // hooks
+    const { showAlert } = useContext(AlertContext)
     const { budget, setBudget } = useContext(BudgetContext)
     const { backendErros } = useUtils()
-    const navigate = useNavigate()
     const { user } = useContext(UserContext)
-    const draftAlertShown = useRef(false)
     const { id } = useParams()
+    // static values
+    const kitTypes = ['ceo', 'commercial_diretor']
 
     useEffect(() => {
         if (id) {
@@ -109,55 +115,77 @@ export default function NewBudget() {
                     })
                 })
         }
-    }, [id, setBudget, showAlert])
+
+        const getUserData = async (): Promise<string> => {
+            const userData = await axios.get(`${baseURL}/users`, {
+                params: {
+                    user: user.id,
+                    uid: user.id,
+                },
+            })
+            const userType = userData.data.type || userData.data.user_type
+            return userType
+        }
+
+        getUserData().then((type) => setUserType(type))
+    }, [id])
+
+    const saveBudget = async () => {
+        setSaving(true)
+        try {
+            let response
+            if (budget.editing) {
+                console.log(budget)
+                response = await axios.put(`${baseURL}/doc?user=${user.id}`, {
+                    path: 'budgets',
+                    data: budget,
+                    id: budget.id,
+                })
+            } else {
+                response = await axios.post(`${baseURL}/doc?user=${user.id}`, {
+                    path: 'budgets',
+                    data: budget,
+                    id: budget.id || null,
+                })
+            }
+
+            setSaving(false)
+            showAlert({
+                message: `Orçamento ${budget.editing ? 'atualizado' : 'criado'} com sucesso!`,
+                type: 'success',
+            })
+            localStorage.removeItem('budget')
+            setBudget({} as Budget)
+            if (!kitTypes.includes(userType || 'seller'))
+                navigate(`/dashboard/budgets`)
+            else navigate(`/dashboard/budgets/${response.data.id}`)
+        } catch (error) {
+            setSaving(false)
+            console.error(error)
+            const err: any = error
+            const code = err.response?.data?.code || err.code || 'UNKNOWN_ERROR'
+            const message =
+                backendErros(code) || err.message || 'Erro inesperado'
+            showAlert({ message, type: 'error' })
+        }
+    }
 
     const handleNext = async () => {
         if (validateStep(activeStep, budget)) {
             if (activeStep === steps.length - 1) {
-                setSaving(true)
-                try {
-                    let response
-                    if (budget.editing) {
-                        console.log(budget)
-                        response = await axios.put(
-                            `${baseURL}/doc?user=${user.id}`,
-                            {
-                                path: 'budgets',
-                                data: budget,
-                                id: budget.id,
-                            }
-                        )
-                    } else {
-                        response = await axios.post(
-                            `${baseURL}/doc?user=${user.id}`,
-                            {
-                                path: 'budgets',
-                                data: budget,
-                                id: budget.id || null,
-                            }
-                        )
-                    }
-
-                    setSaving(false)
-                    showAlert({
-                        message: `Orçamento ${budget.editing ? 'atualizado' : 'criado'} com sucesso!`,
-                        type: 'success',
-                    })
-                    localStorage.removeItem('budget')
-                    setBudget({} as Budget)
-                    navigate(`/dashboard/budgets/${response.data.id}`)
-                } catch (error) {
-                    setSaving(false)
-                    console.error(error)
-                    const err: any = error
-                    const code =
-                        err.response?.data?.code || err.code || 'UNKNOWN_ERROR'
-                    const message =
-                        backendErros(code) || err.message || 'Erro inesperado'
-                    showAlert({ message, type: 'error' })
-                }
+                saveBudget()
             } else {
-                setActiveStep((prevActiveStep) => prevActiveStep + 1)
+                if (
+                    activeStep + 1 === 2 &&
+                    !kitTypes.includes(userType || 'seller')
+                ) {
+                    showAlert({
+                        message: 'Você não tem permissão para selecionar o Kit',
+                        type: 'info',
+                    })
+                    setBudget({ ...budget, status: 'pending_review' })
+                    setActiveStep((prevActiveStep) => prevActiveStep + 2)
+                } else setActiveStep((prevActiveStep) => prevActiveStep + 1)
             }
         } else {
             showAlert({
@@ -168,7 +196,14 @@ export default function NewBudget() {
     }
 
     const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1)
+        if (activeStep - 1 === 2 && !kitTypes.includes(userType || 'seller')) {
+            showAlert({
+                message: 'Você não tem permissão para selecionar o Kit',
+                type: 'info',
+            })
+            setBudget({ ...budget, status: 'pending_review' })
+            setActiveStep((prevActiveStep) => prevActiveStep - 2)
+        } else setActiveStep((prevActiveStep) => prevActiveStep - 1)
     }
 
     useEffect(() => {
@@ -193,14 +228,20 @@ export default function NewBudget() {
 
             <Paper sx={{ p: 2 }}>
                 <Stepper activeStep={activeStep} alternativeLabel>
-                    {steps.map((label) => (
-                        <Step
-                            key={label}
-                            sx={{
-                                color: '#3e4c5c',
-                            }}
-                        >
-                            <StepLabel>{label}</StepLabel>
+                    {steps.map((label, index) => (
+                        <Step key={label} sx={{ color: '#3e4c5c' }}>
+                            {index === 2 &&
+                            !kitTypes.includes(userType || 'seller') ? (
+                                <StepLabel
+                                    StepIconComponent={() => (
+                                        <LockRounded color='error' />
+                                    )}
+                                >
+                                    Bloqueado
+                                </StepLabel>
+                            ) : (
+                                <StepLabel>{label}</StepLabel>
+                            )}
                         </Step>
                     ))}
                 </Stepper>

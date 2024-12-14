@@ -181,6 +181,7 @@ export default function Users() {
             />
             {users && users.length > 0 && (
                 <DynamicTable
+                    tableID='users-table'
                     data={users}
                     defaultVisibleFields={visibleFields}
                     fieldLabels={fieldLabels}

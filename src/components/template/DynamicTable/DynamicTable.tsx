@@ -1,8 +1,10 @@
+import { SaveRounded } from '@mui/icons-material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
+    Button,
     Checkbox,
     FormControlLabel,
     Grid,
@@ -19,9 +21,11 @@ import {
     useTheme,
 } from '@mui/material'
 import { styled } from '@mui/system'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import { AlertContext } from '../../../contexts/AlertContext'
 
 type DynamicTableProps = {
+    tableID: string
     data: any[]
     defaultVisibleFields: string[]
     fieldLabels: { [key: string]: string }
@@ -43,6 +47,7 @@ const StyledTableCell = styled(TableCell)(() => ({
 }))
 
 const DynamicTable: React.FC<DynamicTableProps> = ({
+    tableID,
     data,
     defaultVisibleFields,
     fieldLabels,
@@ -50,8 +55,13 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
     customColumns = [],
 }) => {
     const theme = useTheme()
-    const [visibleFields, setVisibleFields] =
-        useState<string[]>(defaultVisibleFields)
+    const { showAlert } = useContext(AlertContext)
+
+    const [visibleFields, setVisibleFields] = useState<string[]>(() => {
+        const savedFields = localStorage.getItem(`visibleFields_${tableID}`)
+        return savedFields ? JSON.parse(savedFields) : defaultVisibleFields
+    })
+
     const [order, setOrder] = useState<Order>('asc')
     const [orderBy, setOrderBy] = useState<string>('')
     const [page, setPage] = useState<number>(0)
@@ -103,29 +113,24 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
         let aComparable = aValue
         let bComparable = bValue
 
-        if (typeof aValue === 'string' && isDate(aValue)) {
+        if (typeof aValue === 'string' && isDate(aValue))
             aComparable = parseDate(aValue).getTime()
-        }
 
-        if (typeof bValue === 'string' && isDate(bValue)) {
+        if (typeof bValue === 'string' && isDate(bValue))
             bComparable = parseDate(bValue).getTime()
-        }
 
-        if (bComparable < aComparable) {
-            return -1
-        }
-        if (bComparable > aComparable) {
-            return 1
-        }
+        if (bComparable < aComparable) return -1
+        if (bComparable > aComparable) return 1
         return 0
     }
 
     const handleFieldToggle = (field: string) => {
-        setVisibleFields((prevFields) =>
-            prevFields.includes(field)
+        setVisibleFields((prevFields) => {
+            const newFields = prevFields.includes(field)
                 ? prevFields.filter((f) => f !== field)
                 : [...prevFields, field]
-        )
+            return newFields
+        })
     }
 
     const handleChangePage = (_: unknown, newPage: number) => {
@@ -197,6 +202,17 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
         )
     }
 
+    const saveVisibleFields = () => {
+        localStorage.setItem(
+            `visibleFields_${tableID}`,
+            JSON.stringify(visibleFields)
+        )
+        showAlert({
+            message: 'Configuração salva com sucesso!',
+            type: 'success',
+        })
+    }
+
     return (
         <Paper>
             <Accordion>
@@ -224,6 +240,15 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                             </Grid>
                         ))}
                     </Grid>
+                    <Button
+                        variant='contained'
+                        size='small'
+                        startIcon={<SaveRounded />}
+                        className='mt-2'
+                        onClick={saveVisibleFields}
+                    >
+                        Salvar visualização
+                    </Button>
                 </AccordionDetails>
             </Accordion>
             <TableContainer>
