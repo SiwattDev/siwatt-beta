@@ -64,7 +64,7 @@ const NewTeam: React.FC<TeamDialogProps> = ({ open, onClose, teamToEdit }) => {
                 })
 
                 const managersUsers = usersResponse.data.filter(
-                    (item: User) => item.type === 'sales-manager'
+                    (item: User) => item.type === 'sales_manager'
                 )
                 setManagers(managersUsers)
 
