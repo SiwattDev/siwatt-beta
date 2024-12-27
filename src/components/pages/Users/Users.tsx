@@ -110,7 +110,7 @@ export default function Users() {
         'address.city': 'Cidade',
         'address.neighborhood': 'Bairro',
         'address.cep': 'CEP',
-        type_entity: 'Tipo de Entidade',
+        user_type: 'Tipo de Entidade',
         phone: 'Telefone',
         name: 'Nome',
         email: 'Email',
