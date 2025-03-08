@@ -48,7 +48,8 @@ export default function ClientData({
 
                 const sellersUsers = response.data.filter(
                     (item: Seller) =>
-                        item.type === 'seller' || item.user_type === 'seller'
+                        item.user_type === 'seller' ||
+                        item.user_type === 'seller'
                 )
                 setSellers(sellersUsers)
             } catch (error) {

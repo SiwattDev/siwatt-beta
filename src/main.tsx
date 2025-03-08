@@ -16,11 +16,11 @@ const theme = createTheme({
     palette: {
         mode: 'light',
         primary: {
-            main: '#ffffff',
-            light: '#ffffff',
-            dark: '#cccccc',
-            contrastText: '#000',
-            pale: '#ffffff57',
+            main: '#3e4c5c',
+            light: '#697789',
+            dark: '#232c38',
+            contrastText: '#fff',
+            pale: '#3e4c5c57',
         },
         secondary: {
             main: '#FDC611',

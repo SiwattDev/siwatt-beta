@@ -50,7 +50,7 @@ export default function Clients() {
 
             const sellers = usersResponse.data.filter(
                 (user: any) =>
-                    user.type === 'seller' || user.user_type === 'seller'
+                    user.user_type === 'seller' || user.user_type === 'seller'
             )
 
             const clientsWithSellerData = clientsResponse.data.map(

@@ -47,7 +47,8 @@ export default function Visits() {
                 const visitsData: Visit[] = visitsResponse.data
                 const sellersData: Seller[] = usersResponse.data.filter(
                     (user: Seller) =>
-                        user.type === 'seller' || user.user_type === 'seller'
+                        user.user_type === 'seller' ||
+                        user.user_type === 'seller'
                 )
 
                 const visitsBySeller = sellersData.map((seller) => {

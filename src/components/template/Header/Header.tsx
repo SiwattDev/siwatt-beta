@@ -40,7 +40,6 @@ type Company = {
 export default function Header() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const { darkMode, toggleTheme } = useContext(DarkModeContext)
-    const [loading, setLoading] = useState<boolean>(false)
     const [company, setCompany] = useState<Company | null>(null)
     const open = Boolean(anchorEl)
     const { user } = useContext(UserContext)
@@ -73,8 +72,6 @@ export default function Header() {
                 const message =
                     backendErros(code) || error.message || 'Erro inesperado'
                 showAlert({ message, type: 'error' })
-            } finally {
-                setLoading(false)
             }
         }
 

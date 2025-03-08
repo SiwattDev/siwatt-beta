@@ -123,7 +123,7 @@ export default function NewBudget() {
                     uid: user.id,
                 },
             })
-            const userType = userData.data.type || userData.data.user_type
+            const userType = userData.data.user_type || userData.data.user_type
             return userType
         }
 

@@ -64,13 +64,14 @@ const NewTeam: React.FC<TeamDialogProps> = ({ open, onClose, teamToEdit }) => {
                 })
 
                 const managersUsers = usersResponse.data.filter(
-                    (item: User) => item.type === 'sales_manager'
+                    (item: User) => item.user_type === 'sales_manager'
                 )
                 setManagers(managersUsers)
 
                 const sellersUsers = usersResponse.data.filter(
                     (item: Seller) =>
-                        item.type === 'seller' || item.user_type === 'seller'
+                        item.user_type === 'seller' ||
+                        item.user_type === 'seller'
                 )
                 setSellers(sellersUsers)
                 setUnits(unitsResponse.data)
