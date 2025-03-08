@@ -14,7 +14,7 @@ import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
 import { useConfirm } from '../../../hooks/useConfirm'
 import useUtils from '../../../hooks/useUtils'
-import { EntityTypes, User } from '../../../types/EntityTypes'
+import { Entity, EntityTypes, User } from '../../../types/EntityTypes'
 import Confirm from '../../template/Confirm/Confirm'
 import DynamicTable from '../../template/DynamicTable/DynamicTable'
 import Loading from '../../template/Loading/Loading'
@@ -40,7 +40,7 @@ export default function Users() {
                 },
             })
 
-            setUsers(response.data)
+            setUsers(response.data.filter((u: Entity) => u.id !== 'user_types'))
         } catch (error: any) {
             console.error(error)
             const code =

@@ -72,7 +72,7 @@ export default function UserData({
             !user.email ||
             !user.phone ||
             (!user.password && !data) ||
-            !user.type ||
+            !user.user_type ||
             !user.unit ||
             !user.address.cep
         ) {
@@ -195,11 +195,11 @@ export default function UserData({
                 <InputLabel required>Tipo de usuário</InputLabel>
                 <Select
                     label='Tipo de usuário'
-                    value={user.type || ''}
+                    value={user.user_type || ''}
                     onChange={(e) =>
                         setUser({
                             ...user,
-                            type: e.target.value as
+                            user_type: e.target.value as
                                 | 'business_intermediator'
                                 | 'ceo'
                                 | 'commercial_diretor'

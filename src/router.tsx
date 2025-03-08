@@ -3,6 +3,7 @@ import Budgets from './components/pages/Budgets/Budgets'
 import BudgetDetails from './components/pages/Budgets/NewBudget/BudgetDetails/BudgetDetails'
 import NewBudget from './components/pages/Budgets/NewBudget/NewBudget'
 import Clients from './components/pages/Clients/Clients'
+import Companies from './components/pages/Companies/Companies'
 import CreateEntity from './components/pages/CreateEntity/CreateEntity'
 import Dashboard from './components/pages/Dashboard'
 import Funnel from './components/pages/Funnel/Funnel'
@@ -16,12 +17,17 @@ import Users from './components/pages/Users/Users'
 import SellerVisits from './components/pages/Visits/SellerVisits/SellerVisits'
 import VisitDetails from './components/pages/Visits/SellerVisits/VisitDetails/VisitDetails'
 import Visits from './components/pages/Visits/Visits'
+import WelcomeAdmin from './components/pages/WelcomeAdmin/WelcomeAdmin'
 
 function AppRouter() {
     const routes = [
         {
             path: '/',
             element: <Login />,
+        },
+        {
+            path: '/welcome',
+            element: <WelcomeAdmin />,
         },
         {
             path: '/dashboard',
@@ -86,6 +92,10 @@ function AppRouter() {
                 {
                     path: 'teams',
                     element: <Teams />,
+                },
+                {
+                    path: 'companies',
+                    element: <Companies />,
                 },
             ],
         },

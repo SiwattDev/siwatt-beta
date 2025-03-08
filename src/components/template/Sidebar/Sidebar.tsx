@@ -2,6 +2,7 @@ import {
     ApartmentRounded,
     BadgeRounded,
     BentoRounded,
+    BusinessRounded,
     DescriptionRounded,
     Diversity3Rounded,
     HandshakeRounded,
@@ -53,6 +54,7 @@ export default function Sidebar() {
         { to: 'teams', icon: <Diversity3Rounded />, text: 'Equipes' },
         { to: 'partners', icon: <HandshakeRounded />, text: 'Parceiros' },
         { to: 'units', icon: <ApartmentRounded />, text: 'Unidades' },
+        { to: 'companies', icon: <BusinessRounded />, text: 'Empresas' },
     ]
 
     return (

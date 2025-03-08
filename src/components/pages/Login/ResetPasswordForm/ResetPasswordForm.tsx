@@ -1,6 +1,8 @@
 import { Button, TextField } from '@mui/material'
+import { sendPasswordResetEmail } from 'firebase/auth'
 import { useContext, useState } from 'react'
 import { AlertContext } from '../../../../contexts/AlertContext'
+import { auth } from '../../../../firebase' // Importando a instância de auth do Firebase
 
 type User = {
     email: string
@@ -50,15 +52,25 @@ export default function ResetPasswordForm({
         setUserErrors((prevErrors) => ({ ...prevErrors, [name]: error }))
     }
 
-    const handleResetPassword = () => {
+    const handleResetPassword = async () => {
         const emailError = validateField('email', user.email)
         setUserErrors({ email: emailError })
 
         if (!emailError) {
-            showAlert({
-                message: 'Solicitação de redefinição de senha enviada',
-                type: 'success',
-            })
+            try {
+                console.log(user.email)
+                await sendPasswordResetEmail(auth, user.email)
+                showAlert({
+                    message: 'Solicitação de redefinição de senha enviada',
+                    type: 'success',
+                })
+            } catch (error) {
+                console.error('Erro ao enviar o email de redefinição:', error)
+                showAlert({
+                    message: 'Erro ao solicitar redefinição de senha',
+                    type: 'error',
+                })
+            }
         } else {
             showAlert({
                 message: 'Erro ao solicitar redefinição de senha',

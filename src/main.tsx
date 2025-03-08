@@ -16,11 +16,11 @@ const theme = createTheme({
     palette: {
         mode: 'light',
         primary: {
-            main: '#0656B4',
-            light: '#3b81df',
-            dark: '#003b88',
-            contrastText: '#fff',
-            pale: '#0a66d157',
+            main: '#ffffff',
+            light: '#ffffff',
+            dark: '#cccccc',
+            contrastText: '#000',
+            pale: '#ffffff57',
         },
         secondary: {
             main: '#FDC611',
@@ -53,7 +53,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <UserProvider>
                         <BudgetProvider>
                             <SearchProvider>
-                                <LoadScript googleMapsApiKey='AIzaSyAeOJrvDZOVM5_X-6uGan_Cu0ZiPH5HGVw'>
+                                <LoadScript googleMapsApiKey='AIzaSyAGtVVBpO7_y0RwYRXaCpu_aEg7pAyxfsg'>
                                     <Router />
                                 </LoadScript>
                             </SearchProvider>

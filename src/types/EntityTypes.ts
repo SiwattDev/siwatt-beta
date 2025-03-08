@@ -31,8 +31,7 @@ type Entity = {
 
 type User = Entity &
     Address & {
-        user_type: string // Depreciated
-        type:
+        user_type:
             | 'business_intermediator'
             | 'ceo'
             | 'commercial_diretor'
@@ -40,11 +39,11 @@ type User = Entity &
             | 'sales_manager'
         password?: string
         unit: string
+        company: string
     }
 
 type Seller = Entity & {
-    user_type?: string // Depreciated
-    type: string
+    user_type: string // Depreciated
 }
 
 type Client = Entity & {

@@ -4,22 +4,18 @@ import {
     LightModeRounded,
     PersonAddRounded,
 } from '@mui/icons-material'
-import {
-    Box,
-    IconButton,
-    Menu,
-    MenuItem,
-    Tooltip,
-    useMediaQuery,
-    useTheme,
-} from '@mui/material'
-import React, { useContext, useState } from 'react'
+import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material'
+import axios from 'axios'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import LogoIcon from '../../../assets/icon-logo.webp'
-import LogoText from '../../../assets/logo.webp'
+import { AlertContext } from '../../../contexts/AlertContext'
 import { DarkModeContext } from '../../../contexts/DarkModeContext'
+import { UserContext } from '../../../contexts/UserContext'
+import { baseURL } from '../../../globals'
 import useAuth from '../../../hooks/useAuth'
+import useUtils from '../../../hooks/useUtils'
 import SearchNavigator from './SearchNavigator/SearchNavigator'
 
 const Container = styled.header`
@@ -27,23 +23,63 @@ const Container = styled.header`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 10px;
+    padding: 10px 20px;
 `
+
+type Company = {
+    admin: string
+    cnpj: string
+    color: string
+    email: string
+    id: string
+    logo: string
+    name: string
+    phone: string
+}
 
 export default function Header() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const { darkMode, toggleTheme } = useContext(DarkModeContext)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [company, setCompany] = useState<Company | null>(null)
     const open = Boolean(anchorEl)
-    const theme = useTheme()
-    const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
+    const { user } = useContext(UserContext)
+    const { showAlert } = useContext(AlertContext)
+    const { backendErros } = useUtils()
     const { logout } = useAuth()
     const navigate = useNavigate()
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) =>
         setAnchorEl(event.currentTarget)
-    }
 
     const handleClose = () => setAnchorEl(null)
+
+    useEffect(() => {
+        const fetchCompany = async () => {
+            try {
+                const response = await axios.get(`${baseURL}/doc`, {
+                    params: {
+                        user: user.id,
+                        path: 'companies',
+                        id: user.company,
+                    },
+                })
+
+                setCompany(response.data)
+            } catch (error: any) {
+                console.error(error)
+                const code =
+                    error?.response?.data?.code || error.code || 'UNKNOWN_ERROR'
+                const message =
+                    backendErros(code) || error.message || 'Erro inesperado'
+                showAlert({ message, type: 'error' })
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        if (user.company) fetchCompany()
+    }, [user])
 
     return (
         <Container>
@@ -55,15 +91,12 @@ export default function Header() {
                     marginRight: '10px',
                 }}
             >
-                <img src={LogoIcon} width='35' height='35' alt='Logo Siwatt' />
-                {isMdUp && (
-                    <img
-                        src={LogoText}
-                        height='25'
-                        className='ms-2'
-                        alt='Nome Siwatt'
-                    />
-                )}
+                <img
+                    src={company?.logo || LogoIcon}
+                    width='auto'
+                    height='35'
+                    alt='Logo Siwatt'
+                />
             </Box>
             <SearchNavigator />
             <Box

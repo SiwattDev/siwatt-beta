@@ -76,7 +76,7 @@ export default function AutoComplete({
 
     return (
         <Stack
-            width={400}
+            width={300}
             sx={{
                 pointerEvents: 'all',
             }}
