@@ -5,6 +5,8 @@ import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { AlertContext } from '../../contexts/AlertContext'
+import { CompanyContext } from '../../contexts/CompanyContext'
+import { PaletteContext } from '../../contexts/PaletteContext'
 import { UserContext } from '../../contexts/UserContext'
 import { auth } from '../../firebase'
 import { baseURL } from '../../globals'
@@ -31,10 +33,12 @@ export default function Dashboard() {
     const [loading, setLoading] = useState<boolean>(true)
     const theme = useTheme()
     const { setUser } = useContext(UserContext)
+    const { setCompany } = useContext(CompanyContext)
+    const { setPrimaryColor } = useContext(PaletteContext)
     const navigate = useNavigate()
-    const { logout } = useAuth()
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
+    const { logout } = useAuth()
 
     useEffect(() => {
         const subscribe = onAuthStateChanged(auth, async (user) => {
@@ -47,13 +51,25 @@ export default function Dashboard() {
                         },
                     })
 
-                    if (!userData.data)
+                    const companyData = await axios.get(`${baseURL}/doc`, {
+                        params: {
+                            user: user.uid,
+                            path: 'companies',
+                            id: userData.data.company,
+                        },
+                    })
+
+                    if (!userData.data || !companyData.data) {
                         showAlert({
                             message: 'Erro ao buscar os dados do usuário',
                             type: 'error',
                         })
+                        throw new Error()
+                    }
 
                     setUser(userData.data)
+                    setCompany(companyData.data)
+                    setPrimaryColor(companyData.data.color)
                     setLoading(false)
                     showAlert({
                         message: 'Entrou como ' + userData.data.name,

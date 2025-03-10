@@ -4,14 +4,15 @@ import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlertContext } from '../../../../contexts/AlertContext'
+import { WelcomeContext } from '../../../../contexts/WelcomeContext'
 
 export default function Welcome({ onNext }: { onNext: () => void }) {
-    const email = 'vansistem@gmail.com'
     const auth = getAuth()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
     const [userName, setUserName] = useState<string>('')
     const { showAlert } = useContext(AlertContext)
+    const { data } = useContext(WelcomeContext)
 
     const capitalizeFirstLetter = (str: string) => {
         return str.charAt(0).toUpperCase() + str.substring(1)
@@ -23,7 +24,7 @@ export default function Welcome({ onNext }: { onNext: () => void }) {
                 await signOut(auth)
                 const userCredential = await signInWithEmailAndPassword(
                     auth,
-                    email,
+                    data.user.email,
                     '@van107669#'
                 )
                 const user = userCredential.user
@@ -42,7 +43,7 @@ export default function Welcome({ onNext }: { onNext: () => void }) {
         }
 
         authenticateUser()
-    }, [auth, email, navigate])
+    }, [auth, data, navigate])
 
     if (loading) {
         return (
@@ -60,7 +61,7 @@ export default function Welcome({ onNext }: { onNext: () => void }) {
     return (
         <>
             <Typography variant='h5' className='text-center mb-3'>
-                Bem-vindo, {capitalizeFirstLetter(userName)}!
+                Bem-vindo, {capitalizeFirstLetter(data.user.name)}!
             </Typography>
             <Typography className='fw-bold'>
                 Você foi cadastrado como administrador da empresa CredFácil!

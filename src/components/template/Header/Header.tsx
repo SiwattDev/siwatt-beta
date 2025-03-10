@@ -2,9 +2,18 @@ import {
     AccountCircleRounded,
     DarkModeRounded,
     LightModeRounded,
+    LogoutRounded,
     PersonAddRounded,
 } from '@mui/icons-material'
-import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material'
+import {
+    Avatar,
+    Box,
+    IconButton,
+    Menu,
+    MenuItem,
+    Tooltip,
+    Typography,
+} from '@mui/material'
 import axios from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -16,6 +25,7 @@ import { UserContext } from '../../../contexts/UserContext'
 import { baseURL } from '../../../globals'
 import useAuth from '../../../hooks/useAuth'
 import useUtils from '../../../hooks/useUtils'
+import Loading from '../Loading/Loading'
 import SearchNavigator from './SearchNavigator/SearchNavigator'
 
 const Container = styled.header`
@@ -41,6 +51,7 @@ export default function Header() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const { darkMode, toggleTheme } = useContext(DarkModeContext)
     const [company, setCompany] = useState<Company | null>(null)
+    const [loading, setLoading] = useState<boolean>(false)
     const open = Boolean(anchorEl)
     const { user } = useContext(UserContext)
     const { showAlert } = useContext(AlertContext)
@@ -55,6 +66,7 @@ export default function Header() {
 
     useEffect(() => {
         const fetchCompany = async () => {
+            setLoading(true)
             try {
                 const response = await axios.get(`${baseURL}/doc`, {
                     params: {
@@ -72,6 +84,8 @@ export default function Header() {
                 const message =
                     backendErros(code) || error.message || 'Erro inesperado'
                 showAlert({ message, type: 'error' })
+            } finally {
+                setLoading(false)
             }
         }
 
@@ -88,12 +102,16 @@ export default function Header() {
                     marginRight: '10px',
                 }}
             >
-                <img
-                    src={company?.logo || LogoIcon}
-                    width='auto'
-                    height='35'
-                    alt='Logo Siwatt'
-                />
+                {loading ? (
+                    <Loading size={20} message='' />
+                ) : (
+                    <img
+                        src={company?.logo || LogoIcon}
+                        width='auto'
+                        height='35'
+                        alt='Logo Siwatt'
+                    />
+                )}
             </Box>
             <SearchNavigator />
             <Box
@@ -132,8 +150,17 @@ export default function Header() {
                         'aria-labelledby': 'basic-button',
                     }}
                 >
-                    <MenuItem onClick={handleClose}>Profile</MenuItem>
-                    <MenuItem onClick={handleClose}>My account</MenuItem>
+                    <MenuItem>
+                        <Box className='me-3'>
+                            <Avatar>{user.name[0]}</Avatar>
+                        </Box>
+                        <Box>
+                            <Typography>{user.name}</Typography>
+                            <Typography variant='body2'>
+                                {user.email}
+                            </Typography>
+                        </Box>
+                    </MenuItem>
                     <MenuItem
                         onClick={() => {
                             handleClose()
@@ -141,7 +168,7 @@ export default function Header() {
                             navigate('/')
                         }}
                     >
-                        Logout
+                        <LogoutRounded className='me-2' /> Sair dessa conta
                     </MenuItem>
                 </Menu>
             </Box>

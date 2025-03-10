@@ -19,28 +19,14 @@ import {
     useTheme,
 } from '@mui/material'
 import React, { useState } from 'react'
+import { Admin, Company } from '../../../types/CompanyTypes'
 import FileLoader from '../../template/FileLoader/FileLoader'
 import PageHeader from '../../template/PageHeader/PageHeader'
-
-interface CompanyData {
-    name: string
-    cnpj: string
-    email: string
-    phone: string
-    logo: File | null
-    color: string
-    admin: AdminData | null
-}
-
-interface AdminData {
-    name: string
-    email: string
-}
 
 export default function Companies() {
     const theme = useTheme()
 
-    const [companyData, setCompanyData] = useState<CompanyData>({
+    const [companyData, setCompanyData] = useState<Company>({
         name: '',
         cnpj: '',
         email: '',
@@ -51,7 +37,7 @@ export default function Companies() {
     })
 
     const [openDialog, setOpenDialog] = useState(false)
-    const [adminData, setAdminData] = useState<AdminData>({
+    const [adminData, setAdminData] = useState<Admin>({
         name: '',
         email: '',
     })

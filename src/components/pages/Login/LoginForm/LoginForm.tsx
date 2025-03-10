@@ -8,11 +8,15 @@ import {
     InputLabel,
     TextField,
 } from '@mui/material'
+import axios from 'axios'
 import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlertContext } from '../../../../contexts/AlertContext'
+import { WelcomeContext } from '../../../../contexts/WelcomeContext'
+import { baseURL } from '../../../../globals'
 import useAuth from '../../../../hooks/useAuth'
 import useUtils from '../../../../hooks/useUtils'
+import { Company } from '../../../../types/CompanyTypes'
 import Loading from '../../../template/Loading/Loading'
 
 type User = {
@@ -47,6 +51,7 @@ export default function LoginForm({
     const navigate = useNavigate()
     const { showAlert } = useContext(AlertContext)
     const { backendErros } = useUtils()
+    const { setData } = useContext(WelcomeContext)
 
     const validateField = (
         name: string,
@@ -89,7 +94,11 @@ export default function LoginForm({
         if (!emailError && !passwordError) {
             try {
                 const loginResponse = await login(user)
-                if (loginResponse && loginResponse.user) {
+                if (
+                    loginResponse &&
+                    loginResponse.user &&
+                    loginResponse.user.emailVerified
+                ) {
                     setLoading(false)
                     showAlert({
                         message: 'Login feito com sucesso',
@@ -97,6 +106,57 @@ export default function LoginForm({
                     })
                     await new Promise((resolve) => setTimeout(resolve, 1000))
                     navigate('/dashboard')
+                } else if (
+                    loginResponse &&
+                    loginResponse.user &&
+                    !loginResponse.user.emailVerified
+                ) {
+                    const userData = await axios.get(`${baseURL}/users`, {
+                        params: {
+                            user: loginResponse.user.uid,
+                            uid: loginResponse.user.uid,
+                        },
+                    })
+
+                    const companyData = await axios.get(`${baseURL}/doc`, {
+                        params: {
+                            user: loginResponse.user.uid,
+                            path: 'companies',
+                            id: userData.data.company,
+                        },
+                    })
+
+                    if (!userData.data || !companyData.data) {
+                        showAlert({
+                            message: 'Erro ao buscar os dados do usuário',
+                            type: 'error',
+                        })
+                        throw new Error()
+                    }
+
+                    if (
+                        (companyData.data as Company).admin ===
+                        userData.data.email
+                    ) {
+                        setData({
+                            user: {
+                                name: userData.data.displayName || '',
+                                email: userData.data.email || '',
+                            },
+                            company: companyData.data as Company,
+                        })
+                        navigate('/welcome')
+                    } else {
+                        setLoading(false)
+                        showAlert({
+                            message: 'Login feito com sucesso',
+                            type: 'success',
+                        })
+                        await new Promise((resolve) =>
+                            setTimeout(resolve, 1000)
+                        )
+                        navigate('/dashboard')
+                    }
                 }
             } catch (error) {
                 console.log(error)

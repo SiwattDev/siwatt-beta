@@ -7,9 +7,12 @@ import ReactDOM from 'react-dom/client'
 import 'react-toastify/dist/ReactToastify.min.css'
 import { AlertProvider } from './contexts/AlertContext.tsx'
 import { BudgetProvider } from './contexts/BudgetContext.tsx'
+import { CompanyProvider } from './contexts/CompanyContext.tsx'
 import { DarkModeProvider } from './contexts/DarkModeContext.tsx'
+import { PaletteProvider } from './contexts/PaletteContext.tsx'
 import { SearchProvider } from './contexts/SearchContext.tsx'
 import { UserProvider } from './contexts/UserContext.tsx'
+import { WelcomeProvider } from './contexts/WelcomeContext.tsx'
 import Router from './router.tsx'
 
 const theme = createTheme({
@@ -50,15 +53,21 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <ThemeProvider theme={theme}>
             <DarkModeProvider>
                 <AlertProvider>
-                    <UserProvider>
-                        <BudgetProvider>
-                            <SearchProvider>
-                                <LoadScript googleMapsApiKey='AIzaSyAGtVVBpO7_y0RwYRXaCpu_aEg7pAyxfsg'>
-                                    <Router />
-                                </LoadScript>
-                            </SearchProvider>
-                        </BudgetProvider>
-                    </UserProvider>
+                    <WelcomeProvider>
+                        <UserProvider>
+                            <BudgetProvider>
+                                <SearchProvider>
+                                    <CompanyProvider>
+                                        <PaletteProvider>
+                                            <LoadScript googleMapsApiKey='AIzaSyAGtVVBpO7_y0RwYRXaCpu_aEg7pAyxfsg'>
+                                                <Router />
+                                            </LoadScript>
+                                        </PaletteProvider>
+                                    </CompanyProvider>
+                                </SearchProvider>
+                            </BudgetProvider>
+                        </UserProvider>
+                    </WelcomeProvider>
                 </AlertProvider>
             </DarkModeProvider>
         </ThemeProvider>

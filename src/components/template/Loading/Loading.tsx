@@ -1,11 +1,13 @@
 import { Box, CircularProgress, Typography, useTheme } from '@mui/material'
 
 type LoadingProps = {
+    size?: number
     fullPage?: boolean
     message?: string
 }
 
 export default function Loading({
+    size = 35,
     fullPage = false,
     message = 'Carregando...',
 }: LoadingProps) {
@@ -31,7 +33,7 @@ export default function Loading({
                 backdropFilter: fullPage ? 'blur(5px)' : 'none',
             }}
         >
-            <CircularProgress size={35} className='mb-2' />
+            <CircularProgress size={size} className='mb-2' />
             <Typography sx={{ color: theme.palette.text.secondary }}>
                 {message}
             </Typography>

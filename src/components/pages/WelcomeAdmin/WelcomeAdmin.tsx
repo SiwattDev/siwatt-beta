@@ -1,8 +1,9 @@
 import { CloseRounded } from '@mui/icons-material'
 import { Box, Card, CardContent, useTheme } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import LogoIcon from '../../../assets/icon-logo.webp'
 import LogoText from '../../../assets/logo.webp'
+import { WelcomeContext } from '../../../contexts/WelcomeContext'
 import CompleteInfo from './steps/CompleteInfo'
 import SetPassword from './steps/SetPassword'
 import VerifyEmail from './steps/VerifyEmail'
@@ -12,6 +13,9 @@ export default function WelcomeAdmin() {
     const theme = useTheme()
     const [loaded, setLoaded] = useState(false)
     const [step, setStep] = useState(1)
+    const { data } = useContext(WelcomeContext)
+
+    console.log(data)
 
     const nextStep = () => setStep((prev) => prev + 1)
 
@@ -29,7 +33,7 @@ export default function WelcomeAdmin() {
                 alignItems: 'center',
                 height: '100vh',
                 padding: '20px',
-                background: theme.palette.background.default,
+                background: '#0e0f10',
                 overflow: 'hidden',
                 gap: '40px',
                 '&::before': {
@@ -72,9 +76,9 @@ export default function WelcomeAdmin() {
             >
                 <Box className='partner-logo'>
                     <img
-                        src='https://franquiacredfacil.com.br/wp-content/uploads/2023/06/logo-credfacil-v2.png'
+                        src={data.company.logo || ''}
                         width='auto'
-                        height='40'
+                        height='35'
                         alt='Logo Siwatt'
                     />
                 </Box>
