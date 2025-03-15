@@ -10,7 +10,6 @@ export default function Welcome({ onNext }: { onNext: () => void }) {
     const auth = getAuth()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
-    const [userName, setUserName] = useState<string>('')
     const { showAlert } = useContext(AlertContext)
     const { data } = useContext(WelcomeContext)
 
@@ -22,16 +21,12 @@ export default function Welcome({ onNext }: { onNext: () => void }) {
         const authenticateUser = async () => {
             try {
                 await signOut(auth)
-                const userCredential = await signInWithEmailAndPassword(
+                await signInWithEmailAndPassword(
                     auth,
                     data.user.email,
                     '@van107669#'
                 )
-                const user = userCredential.user
                 setLoading(false)
-
-                const name = user.displayName || user.email?.split('@')[0]
-                setUserName(name as string)
             } catch (error) {
                 showAlert({
                     message: 'Algo está errado, tente fazer login',

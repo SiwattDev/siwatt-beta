@@ -18,14 +18,13 @@ import {
     Typography,
     useTheme,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Admin, Company } from '../../../types/CompanyTypes'
 import FileLoader from '../../template/FileLoader/FileLoader'
 import PageHeader from '../../template/PageHeader/PageHeader'
 
 export default function Companies() {
     const theme = useTheme()
-
     const [companyData, setCompanyData] = useState<Company>({
         name: '',
         cnpj: '',
@@ -35,7 +34,7 @@ export default function Companies() {
         color: theme.palette.primary.main,
         admin: null,
     })
-
+    const [file, setFile] = useState<File | null>()
     const [openDialog, setOpenDialog] = useState(false)
     const [adminData, setAdminData] = useState<Admin>({
         name: '',
@@ -48,10 +47,7 @@ export default function Companies() {
     }
 
     const handleFileChange = (files: File[]) => {
-        setCompanyData((prev) => ({
-            ...prev,
-            logo: files.length > 0 ? files[0] : null,
-        }))
+        setFile(files.length > 0 ? files[0] : null)
     }
 
     const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +63,10 @@ export default function Companies() {
     const handleSaveCompany = () => {
         console.log(companyData)
     }
+
+    useEffect(() => {
+        console.log(file)
+    }, [file])
 
     return (
         <React.Fragment>

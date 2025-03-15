@@ -140,7 +140,7 @@ export default function LoginForm({
                     ) {
                         setData({
                             user: {
-                                name: userData.data.displayName || '',
+                                name: userData.data.name || '',
                                 email: userData.data.email || '',
                             },
                             company: companyData.data as Company,
@@ -233,6 +233,13 @@ export default function LoginForm({
                 className='d-block text-decoration-none mt-3'
             >
                 {forgotPassword ? 'Lembrei minha senha' : 'Esqueci minha senha'}
+            </a>
+            <a
+                href='#'
+                onClick={() => setForgotPassword(!forgotPassword)}
+                className='d-block text-decoration-none mt-3'
+            >
+                Admin de uma empresa? Clique aqui
             </a>
             <Button
                 variant='contained'
